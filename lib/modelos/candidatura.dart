@@ -1,6 +1,4 @@
 import 'dart:convert';
-
-import 'package:asn1lib/asn1lib.dart';
 import 'package:secp256k1/secp256k1.dart';
 
 class Candidato {
@@ -9,28 +7,29 @@ class Candidato {
   String apelido;
   String endereco;
   String timestamp;
+  String assinatura;
   PublicKey chavePublica;
-  Signature assinatura;
 
-  Candidato(
-      {this.id,
-      this.apelido,
-      this.numero,
-      this.endereco,
-      this.timestamp,
-      chavePublica,
-      assinatura}) {
-        var parser = ASN1Parser(assinatura);
+  Candidato({
+    this.id,
+    this.apelido,
+    this.numero,
+    this.endereco,
+    this.timestamp,
+    this.assinatura,
+    chavePublica,
+  }) {
     this.chavePublica = PublicKey.fromHex(chavePublica);
-    this.assinatura = ;
-      }
+  }
 
   String paraJson() {
     return json.encode({
+      'header': 'candidatura',
       'id': this.id,
       'apelido': this.apelido,
       'numero': this.numero,
       'endereco': this.endereco,
+      'assinatura': this.assinatura,
       'chavePublica_cand': this.chavePublica.toHex(),
     });
   }
