@@ -19,20 +19,24 @@ class Registros {
   }
 
   Uint8List hasher(var dados) {
-    return sha256.convert(dados.toString().codeUnits).toString().codeUnits;
+    return Uint8List.fromList(
+        sha256.convert(dados.toString().codeUnits).toString().codeUnits);
   }
 
-  MerkleTree montarArvore() {
+  void montarArvore() {
     List tmp = [];
 
     tmp.addAll(eleitores);
     tmp.addAll(operadores);
     tmp.addAll(candidatos);
 
-    var folhas =
-        tmp.map((f) => sha256.convert(f.id.codeUnits).toString().codeUnits);
+    List<Uint8List> folhas = [];
+    for (var n in tmp) {
+      folhas.add(Uint8List.fromList(
+          sha256.convert(n.id.codeUnits).toString().codeUnits));
+    }
 
-    return MerkleTree(leaves: folhas, hashAlgo: hasher);
+    this.arvore = new MerkleTree(leaves: folhas, hashAlgo: hasher);
   }
 
   String exportarRegistros() {
@@ -42,11 +46,11 @@ class Registros {
     tmp.addAll(operadores);
     tmp.addAll(candidatos);
 
-    arvore = montarArvore();
+    montarArvore();
 
     return json.encode({
       'header': "produto_registro",
-      'raiz_merkle': arvore.root.toString(),
+      'raiz_merkle': String.fromCharCodes(arvore.root),
       'eleitores': eleitores
           .map((e) => {
                 'eleitor': e.nome,
