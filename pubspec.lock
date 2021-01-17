@@ -43,6 +43,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0-nullsafety.3"
+  buffer:
+    dependency: transitive
+    description:
+      name: buffer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.7"
   characters:
     dependency: transitive
     description:
@@ -187,6 +194,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.12.10-nullsafety.3"
+  merkletree:
+    dependency: "direct main"
+    description:
+      name: merkletree
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.3"
   meta:
     dependency: transitive
     description:
