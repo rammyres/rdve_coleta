@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'dart:convert';
+import 'package:convert/convert.dart';
 import 'package:merkletree/merkletree.dart';
 import 'package:rdve_coleta/modelos/candidatura.dart';
 import 'package:rdve_coleta/modelos/eleitor.dart';
@@ -75,7 +76,9 @@ class Registros {
                 'chavePublica_cand': e.chavePublica.toString(),
               })
           .toList(),
-      'arvore': arvore.toString(),
+      'arvore': arvore.leaves.map((e) => hex.encode(e)).toList(),
     });
   }
+
+  void importarRegistros() {}
 }

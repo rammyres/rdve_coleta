@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:typed_data';
+import 'package:asn1lib/asn1lib.dart';
+import 'package:convert/convert.dart';
 import 'package:rdve_coleta/modelos/candidatura.dart';
 import 'package:rdve_coleta/modelos/eleitor.dart';
 import 'package:rdve_coleta/modelos/registros.dart';
@@ -100,4 +104,7 @@ main() {
   registros.adicionar(candidato2);
 
   print(registros.exportarRegistros());
+
+  var teste = json.decode(registros.exportarRegistros());
+  print(teste['candidatos'][1]);
 }
