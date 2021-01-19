@@ -1,7 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
-import 'package:asn1lib/asn1lib.dart';
-import 'package:convert/convert.dart';
 import 'package:rdve_coleta/modelos/candidatura.dart';
 import 'package:rdve_coleta/modelos/eleitor.dart';
 import 'package:rdve_coleta/modelos/registros.dart';
