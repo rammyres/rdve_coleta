@@ -1,6 +1,19 @@
+import 'package:qrscan/qrscan.dart' as scanner;
 import 'package:flutter/material.dart';
 
-class TelaInicial extends StatelessWidget {
+class TelaInicial extends StatefulWidget {
+  @override
+  _TelaInicialState createState() => _TelaInicialState();
+}
+
+class _TelaInicialState extends State<TelaInicial> {
+  String resultado;
+
+  void lerQr() async {
+    var result = await scanner.scan();
+    print(result);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,13 +37,13 @@ class TelaInicial extends StatelessWidget {
                   minWidth: 300,
                   child: RaisedButton(
                     color: Colors.green,
-                    onPressed: () {},
+                    onPressed: () => lerQr(),
                     child: Column(
                       children: [
                         Icon(
                           Icons.account_box_rounded,
                           color: Colors.white,
-                          size: 190,
+                          size: 180,
                         ),
                         Text(
                           "Cadastrar eleitor",
@@ -46,7 +59,6 @@ class TelaInicial extends StatelessWidget {
                 ),
                 ButtonTheme(
                   minWidth: 300,
-                  height: 50,
                   child: RaisedButton(
                       color: Colors.red,
                       child: Column(
