@@ -1,5 +1,6 @@
 #:import ZBarCam kivy_garden.zbarcam.ZBarCam
 #:import ZBarSymbol pyzbar.pyzbar.ZBarSymbol
+#:import QRCodeWidget kivy_garden.qrcode
 
 <MDRaisedButton>:
     md_bg_color: 0, 0, 1, 1
@@ -17,20 +18,20 @@
         MDRaisedButton:
             pos_hint: {'x':0.1, 'top':0.5}
             text: "Alistamento eleitoral"
-            on_press: root.manager.current = 'TelaQREleitor'
+            on_press: root.manager.current = 'TesteLeitor'
 
         MDRaisedButton:
             pos_hint: {'x':0.5, 'top':0.5}
             text: "Registro de Candidatura"
-            on_press: root.gerenciadorTela.current = 'TelaQREleitor'
+            on_press: root.gerenciadorTela.current = 'TesteLeitor'
 
-# <TelaQREleitor>:
-#     FloatLayout:
-#         ZBarCam:
-#             pos_hint:{'x':0.5, 'y': 0.5}
-#             id: zbarcam
-#             # optional, by default checks all types
-#             code_types: ZBarSymbol.QRCODE, ZBarSymbol.EAN13
+<TelaQREleitor>:
+    FloatLayout:
+        ZBarCam:
+            pos_hint:{'x':0.5, 'y': 0.5}
+            id: zbarcam
+            # optional, by default checks all types
+            code_types: ZBarSymbol.QRCODE, ZBarSymbol.EAN13
 
 <TesteLeitor>
     BoxLayout:
@@ -39,4 +40,3 @@
             id: camera
             resolution: (640, 480)
             play: True
-        
