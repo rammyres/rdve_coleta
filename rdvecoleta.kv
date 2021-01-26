@@ -1,19 +1,42 @@
-<Button>:
-    font_size: 20
-    color:0.3, 0.7, 1, 1
-    size_hint: 0.3, 0.3
+#:import ZBarCam kivy_garden.zbarcam.ZBarCam
+#:import ZBarSymbol pyzbar.pyzbar.ZBarSymbol
 
+<MDRaisedButton>:
+    md_bg_color: 0, 0, 1, 1
+    elevation_normal: 6
+    font_size: 30
 
-<FloatLayout>:
-    Label:
-        pos_hint: {"y": 0.4}
-        text: "Alistamento eleitoral"          
-        font_size: 30
-    Button:
-        pos_hint: {'x':0.6, 'top':0.6}
-        background_color: 1, 0.0, 0.0, 1
-        text: "Alistamento eleitoral"
-    Button:
-        pos_hint: {'x':0.1, 'top':0.6}
-        background_color: 1, 0.0, 0.0, 1
-        text: "Registro de candidatura"
+<TelaColeta>:
+    FloatLayout:
+        
+        MDLabel:
+            pos_hint: {"y": 0.4, 'x': 0.3}
+            text: "RDVE Modulo de Coleta"          
+            font_size: 30
+        
+        MDRaisedButton:
+            pos_hint: {'x':0.1, 'top':0.5}
+            text: "Alistamento eleitoral"
+            on_press: root.manager.current = 'TelaQREleitor'
+
+        MDRaisedButton:
+            pos_hint: {'x':0.5, 'top':0.5}
+            text: "Registro de Candidatura"
+            on_press: root.gerenciadorTela.current = 'TelaQREleitor'
+
+# <TelaQREleitor>:
+#     FloatLayout:
+#         ZBarCam:
+#             pos_hint:{'x':0.5, 'y': 0.5}
+#             id: zbarcam
+#             # optional, by default checks all types
+#             code_types: ZBarSymbol.QRCODE, ZBarSymbol.EAN13
+
+<TesteLeitor>
+    BoxLayout:
+        orientation: 'vertical'
+        Camera:
+            id: camera
+            resolution: (640, 480)
+            play: True
+        
