@@ -14,15 +14,19 @@ class TelaQREleitor(Screen):
 class TesteLeitor(Screen):
     pass
 
+class TelaUrna(Screen):
+    pass
+
 
 class RDVEColetaApp(MDApp):
            
     def build(self):
-        self.theme_cls.primary_palette = "BlueGray"
+        # self.theme_cls.primary_palette = "BlueGray"
         self.gerenciadorTela = ScreenManager()
         self.gerenciadorTela.add_widget(TelaColeta(name='TelaInicial'))
-        self.gerenciadorTela.add_widget(TesteLeitor(name='Teste'))
-        self.gerenciadorTela.add_widget(TelaQREleitor(name='TelaQREleitor'))
+        self.gerenciadorTela.add_widget(TelaUrna(name='TelaUrna'))
+        # self.gerenciadorTela.add_widget(TesteLeitor(name='Teste'))
+        # self.gerenciadorTela.add_widget(TelaQREleitor(name='TelaQREleitor'))
 
         self.gerenciadorTela.current='TelaInicial'
         

@@ -11,19 +11,39 @@
     FloatLayout:
         
         MDLabel:
-            pos_hint: {"y": 0.4, 'x': 0.3}
+            pos_hint: {"y": 0.4, 'x': 0.32}
             text: "RDVE Modulo de Coleta"          
             font_size: 30
         
         MDRaisedButton:
-            pos_hint: {'x':0.1, 'top':0.5}
+            pos_hint: {'x':0.08, 'top':0.5}
             text: "Alistamento eleitoral"
             on_press: root.manager.current = 'TesteLeitor'
 
         MDRaisedButton:
             pos_hint: {'x':0.5, 'top':0.5}
             text: "Registro de Candidatura"
-            on_press: root.gerenciadorTela.current = 'TesteLeitor'
+            on_press: root.manager.current = 'TesteLeitor'
+        
+        MDRaisedButton:
+            pos_hint: {'x':0.35, 'top':0.4}
+            text: "Módulo Urna"
+            on_press: root.manager.current = 'TelaUrna'
+
+<TelaUrna>:
+    MDGridLayout:
+        cols: 1
+        adaptive_size: True
+        md_bg_color: app.theme_cls.primary_color
+        MDBoxLayout:
+            pos_hint: {'x':0.5s}
+            MDRaisedButton:
+                text: 'Confirma'
+            MDRaisedButton:
+                text: 'Corrige'
+        
+            MDRaisedButton:
+                text: 'Branco'
 
 <TelaQREleitor>:
     FloatLayout:
@@ -33,10 +53,10 @@
             # optional, by default checks all types
             code_types: ZBarSymbol.QRCODE, ZBarSymbol.EAN13
 
-<TesteLeitor>
-    BoxLayout:
-        orientation: 'vertical'
-        Camera:
-            id: camera
-            resolution: (640, 480)
-            play: True
+# <TesteLeitor>
+#     BoxLayout:
+#         orientation: 'vertical'
+#         Camera:
+#             id: camera
+#             resolution: (640, 480)
+#             play: True
