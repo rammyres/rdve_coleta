@@ -23,7 +23,7 @@
         MDRaisedButton:
             pos_hint: {'x':0.5, 'top':0.5}
             text: "Registro de Candidatura"
-            on_press: root.manager.current = 'TesteLeitor'
+            on_press: root.manager.current = 'TelaQREleitor'
         
         MDRaisedButton:
             pos_hint: {'x':0.35, 'top':0.4}
@@ -32,11 +32,20 @@
 
 <TelaUrna>:
     MDGridLayout:
-        cols: 1
+        cols: 2
         adaptive_size: True
         md_bg_color: app.theme_cls.primary_color
         MDBoxLayout:
-            pos_hint: {'x':0.5s}
+            pos_hint: {'x':0.2}
+            MDRaisedButton:
+                text: '1'
+            MDRaisedButton:
+                text: '2'
+            MDRaisedButton:
+                text: '3'
+        MDBoxLayout:
+
+            pos_hint: {'x':0.5}
             MDRaisedButton:
                 text: 'Confirma'
             MDRaisedButton:

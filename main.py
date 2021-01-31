@@ -25,8 +25,8 @@ class RDVEColetaApp(MDApp):
         self.gerenciadorTela = ScreenManager()
         self.gerenciadorTela.add_widget(TelaColeta(name='TelaInicial'))
         self.gerenciadorTela.add_widget(TelaUrna(name='TelaUrna'))
-        # self.gerenciadorTela.add_widget(TesteLeitor(name='Teste'))
-        # self.gerenciadorTela.add_widget(TelaQREleitor(name='TelaQREleitor'))
+        # self.gerenciadorTela.add_widget(TesteLeitor(name='TesteLeitor'))
+        self.gerenciadorTela.add_widget(TelaQREleitor(name='TelaQREleitor'))
 
         self.gerenciadorTela.current='TelaInicial'
         
