@@ -1,6 +1,3 @@
-#:import ZBarCam kivy_garden.zbarcam.ZBarCam
-#:import ZBarSymbol pyzbar.pyzbar.ZBarSymbol
-#:import QRCodeWidget kivy_garden.qrcode
 
 <MDRaisedButton>:
     md_bg_color: 0, 0, 1, 1
@@ -8,8 +5,9 @@
     font_size: 30
 
 <TelaColeta>:
-    FloatLayout:
-        
+    MDFloatLayout:
+        radius: [25, 0, 0, 0]
+                
         MDLabel:
             pos_hint: {"y": 0.4, 'x': 0.32}
             text: "RDVE Modulo de Coleta"          
@@ -18,7 +16,7 @@
         MDRaisedButton:
             pos_hint: {'x':0.08, 'top':0.5}
             text: "Alistamento eleitoral"
-            on_press: root.manager.current = 'TesteLeitor'
+            on_press: root.manager.current = 'TelaAlistamento'
 
         MDRaisedButton:
             pos_hint: {'x':0.5, 'top':0.5}
@@ -54,18 +52,19 @@
             MDRaisedButton:
                 text: 'Branco'
 
-<TelaQREleitor>:
-    FloatLayout:
-        ZBarCam:
-            pos_hint:{'x':0.5, 'y': 0.5}
-            id: zbarcam
-            # optional, by default checks all types
-            code_types: ZBarSymbol.QRCODE, ZBarSymbol.EAN13
 
-# <TesteLeitor>
-#     BoxLayout:
-#         orientation: 'vertical'
-#         Camera:
-#             id: camera
-#             resolution: (640, 480)
-#             play: True
+<TelaAlistamento>:
+    MDFloatLayout:
+        radius: [25, 0, 0, 0]
+        MDTextField:
+            pos_hint: {'y': 0.6}
+            hint_text: "Nome do eleitor"
+            mode: "rectangle"
+        MDRaisedButton:
+            pos_hint: {'y': 0.4, 'x': 0.6}
+            text: "Confirmar registro"
+        MDRaisedButton:
+            pos_hint: {'y': 0.3, 'x': 0.6}
+            text: "Voltar"
+
+

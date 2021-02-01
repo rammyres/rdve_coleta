@@ -8,7 +8,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 class TelaColeta(Screen):
     pass
 
-class TelaQREleitor(Screen):
+class TelaAlistamento(Screen):
     pass
 
 class TesteLeitor(Screen):
@@ -24,9 +24,9 @@ class RDVEColetaApp(MDApp):
         # self.theme_cls.primary_palette = "BlueGray"
         self.gerenciadorTela = ScreenManager()
         self.gerenciadorTela.add_widget(TelaColeta(name='TelaInicial'))
-        self.gerenciadorTela.add_widget(TelaUrna(name='TelaUrna'))
+        self.gerenciadorTela.add_widget(TelaAlistamento(name='TelaAlistamento'))
         # self.gerenciadorTela.add_widget(TesteLeitor(name='TesteLeitor'))
-        self.gerenciadorTela.add_widget(TelaQREleitor(name='TelaQREleitor'))
+        # self.gerenciadorTela.add_widget(TelaQREleitor(name='TelaQREleitor'))
 
         self.gerenciadorTela.current='TelaInicial'
         
