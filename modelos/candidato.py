@@ -1,5 +1,5 @@
 from ecdsa import SigningKey, VerifyingKey, SECP256k1
-from Crypto.Hash import RIPEMD160
+from Crypto.Hash import RIPEMD160, SHA256
 import binascii, hashlib, base58, json
 
 class Eleitor:
@@ -35,6 +35,19 @@ class Eleitor:
 
         return enderecoPublico_b.decode()
 
+    def retornaHash(self):
+        dados = ':'.join((
+            self.apelido,
+            self.numero, 
+            self.chavePublica,
+            self.endereco
+        ))
+
+        Hash = SHA256.new()
+        Hash.update(dados.decode())
+        return Hash.digest()
+
+
     def paraJson(self):
         return json.dumps({
             'tipo':'regCandidato',
@@ -42,5 +55,6 @@ class Eleitor:
             'numero': self.numero,
             'chavePrivada': self.chavePrivada.to_string,
             'chavePublica': self.chavePublica,
-            'endereco':self.endereco
+            'endereco':self.endereco,
+            'hash': self.retornaHash()
         })
