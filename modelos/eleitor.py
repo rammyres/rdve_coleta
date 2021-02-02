@@ -44,6 +44,9 @@ class Eleitor:
         Hash.update(dados.decode())
         return Hash.digest()
 
+    def assinar(self, dados):
+        return self.chavePrivada.sign(dados.encode()).to_string()
+
     def paraJson(self):
         return json.dumps({
             'tipo':'regEleitor',
