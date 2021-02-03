@@ -1,23 +1,26 @@
 from ecdsa import SigningKey, VerifyingKey, SECP256k1
 from Crypto.Hash import RIPEMD160, SHA256
-import binascii, hashlib, base58, json
+import binascii, hashlib, base58, json, uuid
 
 class Eleitor:
+    ID = ''
     apelido = ''
     numero = ''
     endereco = ''
     chavePrivada = SigningKey()
     
-    def __init__(self, apelido, numero, chavePrivada=None, endereco=None):
+    def __init__(self, apelido, numero, ID = None, chavePrivada=None, endereco=None):
 
         self.apelido = apelido
         self.numero = numero
 
-        if chavePrivada != None and endereco != None:
+        if chavePrivada and endereco and ID:
+            self.ID = ID
             self.chavePrivada = SigningKey.from_string(chavePrivada)
             self.endereco = endereco
 
         else: 
+            self.ID = uuid.uuid4()
             self.chavePrivada = SigningKey.generate(curve=SECP256k1)
             self.endereco = self.gerarEndereco()
 
@@ -51,6 +54,7 @@ class Eleitor:
     def paraJson(self):
         return json.dumps({
             'tipo':'regCandidato',
+            'id': self.ID,
             'apelido':self.apelido,
             'numero': self.numero,
             'chavePrivada': self.chavePrivada.to_string,
