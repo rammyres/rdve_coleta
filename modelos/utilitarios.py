@@ -1,4 +1,5 @@
 import os
+
 class Utilitarios:
     def remover_seguramente(self, caminho, passagens):
         with open(caminho, "ba+", buffering=0) as arquivo:

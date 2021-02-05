@@ -1,6 +1,8 @@
 from pymerkle import MerkleTree
-from utilitarios import Utilitarios
-import candidato, eleitor, utilitarios, json
+from modelos.candidato import Candidato
+from modelos.eleitor import Eleitor
+from modelos.utilitarios import Utilitarios
+import json
 
 class Registros:
     arvore = MerkleTree()
@@ -18,10 +20,10 @@ class Registros:
                 f.close()
 
     def inserir(self, elemento):
-        if isinstance(elemento, eleitor) or isinstance(elemento, candidato):
-            if isinstance(elemento, eleitor):
+        if isinstance(elemento, Eleitor) or isinstance(elemento, Candidato):
+            if isinstance(elemento, Eleitor):
                 self.eleitores.append(elemento)
-            if isinstance(elemento, candidato):
+            if isinstance(elemento, Candidato):
                 self.candidatos.append(elemento)
             self.arvore.update(elemento.retornaHash())
     

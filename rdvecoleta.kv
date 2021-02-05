@@ -4,6 +4,8 @@
     elevation_normal: 6
     font_size: 30
 
+
+
 <TelaColeta>:
     MDFloatLayout:
         radius: [25, 0, 0, 0]
@@ -21,7 +23,7 @@
         MDRaisedButton:
             pos_hint: {'x':0.5, 'top':0.5}
             text: "Registro de Candidatura"
-            on_press: root.manager.current = 'TelaQREleitor'
+            on_press: root.manager.current = 'TelaCandidatura'
         
         MDRaisedButton:
             pos_hint: {'x':0.35, 'top':0.4}
@@ -53,18 +55,44 @@
                 text: 'Branco'
 
 
-<TelaAlistamento>:
-    MDFloatLayout:
-        radius: [25, 0, 0, 0]
+<TelaAlistamento>:    
+    nEleitor: nEleitor
+    MDFloatLayout:    
+        radius: [25, 0, 0, 0]        
         MDTextField:
+            id: nEleitor
             pos_hint: {'y': 0.6}
             hint_text: "Nome do eleitor"
             mode: "rectangle"
         MDRaisedButton:
             pos_hint: {'y': 0.4, 'x': 0.6}
             text: "Confirmar registro"
+            on_press: root.novoEleitor()
         MDRaisedButton:
             pos_hint: {'y': 0.3, 'x': 0.6}
             text: "Voltar"
+            on_press: root.manager.current = 'TelaInicial'
 
-
+<TelaCandidatura>:    
+    nCandidato: nCandidato
+    numCandidato: numCandidato
+    MDFloatLayout:    
+        radius: [25, 0, 0, 0]        
+        MDTextField:
+            id: nCandidato
+            pos_hint: {'y': 0.6}
+            hint_text: "Apelido do candidato"
+            mode: "rectangle"
+        MDTextField:
+            id: numCandidato
+            pos_hint: {'y': 0.5}
+            hint_text: "Numero do candidato"
+            mode: "rectangle"
+        MDRaisedButton:
+            pos_hint: {'y': 0.4, 'x': 0.6}
+            text: "Confirmar registro"
+            on_press: root.novoCandidato()
+        MDRaisedButton:
+            pos_hint: {'y': 0.3, 'x': 0.6}
+            text: "Voltar"
+            on_press: root.manager.current = 'TelaInicial'
