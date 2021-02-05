@@ -57,6 +57,7 @@
 
 <TelaAlistamento>:    
     nEleitor: nEleitor
+    on_enter: root.iniciar()
     MDFloatLayout:    
         radius: [25, 0, 0, 0]        
         MDTextField:
@@ -76,6 +77,8 @@
 <TelaCandidatura>:    
     nCandidato: nCandidato
     numCandidato: numCandidato
+    on_enter: root.iniciar()
+
     MDFloatLayout:    
         radius: [25, 0, 0, 0]        
         MDTextField:

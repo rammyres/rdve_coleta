@@ -9,24 +9,24 @@ class Eleitor:
     chavePrivada = None
     chavePublica = None
 
-    def __init__(self, nome, ID = None, chavePrivada=None, endereco=None):
+    def __init__(self, nome = None, ID = None, chavePrivada=None, endereco=None, dicionario = None):
 
-        self.nome = nome
+        if dicionario:
+            self.importar(dicionario)
 
-        if chavePrivada and endereco and ID:
-            self.ID = ID
-            self.chavePrivada = SigningKey.from_string(chavePrivada)
-            self.chavePublica = self.chavePrivada.get_verifying_key()
-            self.endereco = endereco
+        else:  
+            self.nome = nome
+            if chavePrivada and endereco and ID:
+                self.ID = ID
+                self.chavePrivada = SigningKey.from_string(chavePrivada)
+                self.chavePublica = self.chavePrivada.get_verifying_key()
+                self.endereco = endereco
 
-        else: 
-            self.ID = uuid.uuid4()
-            self.chavePrivada = SigningKey.generate(curve=SECP256k1)
-            self.chavePublica = self.chavePrivada.get_verifying_key()
-            self.endereco = self.gerarEndereco()
-
-        
-
+            else: 
+                self.ID = uuid.uuid4()
+                self.chavePrivada = SigningKey.generate(curve=SECP256k1)
+                self.chavePublica = self.chavePrivada.get_verifying_key()
+                self.endereco = self.gerarEndereco()
 
     def gerarEndereco(self):
         
@@ -42,7 +42,7 @@ class Eleitor:
         return enderecoPublico_b.decode()
 
     def retornaHash(self):
-        print(self.ID)
+        
 
         dados = ':'.join((
             str(self.ID),
@@ -59,6 +59,15 @@ class Eleitor:
     def assinar(self, dados):
         return self.chavePrivada.sign(dados.encode()).to_string()
 
+    def importar(self, dicionario):
+        self = Eleitor(
+            nome = dicionario['nome'],
+            ID = dicionario['id'],
+            chavePrivada=dicionario['chavePrivada'],
+            endereco=dicionario['endereco']
+        )
+        return self
+
     def paraJson(self):
         return json.dumps({
             'tipo':'regEleitor',
@@ -68,4 +77,4 @@ class Eleitor:
             'chavePublica': binascii.hexlify(self.chavePublica.to_string()).hex(),
             'endereco':self.endereco,
             'hash': self.retornaHash().encode().decode()
-        })
+        }, indent=4)

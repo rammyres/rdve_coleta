@@ -20,16 +20,15 @@ class TelaAlistamento(Screen):
 
     def iniciar(self):
         try:
-            f = open("/tmp/registros.json")
-            f.close()
-            self.registro.importar("/tmp/registros.json")
+            with open("/tmp/registros.json", 'r') as f:
+                print(f)
+                self.registro.importar(f)
+                
 
         # Do something with the file
         except IOError:
             print("File not accessible")
-        finally:
-            f.close()
-    
+        
     def novoEleitor(self):        
         eleitor = Eleitor(self.nEleitor.text)
         self.eleitores.append(eleitor)
@@ -41,16 +40,29 @@ class TelaAlistamento(Screen):
 
 
 class TelaCandidatura(Screen):
-    Candidatos = []
+    candidatos = []
+    registro = Registros()
     nCandidato = kyprops.ObjectProperty()
     numCandidato = kyprops.ObjectProperty()
-    
-    def novoCandidato(self):
+
+    def iniciar(self):
+        try:
+            with open("/tmp/registros.json", 'r') as f:
+                print(f)
+                self.registro.importar(f)
+                
+        except IOError:
+            print("File not accessible")
         
+    def novoCandidato(self):        
         candidato = Candidato(self.nCandidato.text, self.numCandidato.text)
-        self.Candidatos.append(candidato)
-        for c in self.Candidatos:
+        self.candidatos.append(candidato)
+        self.registro.inserir(candidato)
+        self.registro.exportar('/tmp/registros.json')
+        for c in self.candidatos:
             print(c.paraJson())
+    
+    
 
 class TelaUrna(Screen):
     pass

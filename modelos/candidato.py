@@ -10,25 +10,26 @@ class Candidato:
     chavePrivada = None
     chavePublica = None
     
-    def __init__(self, apelido, numero, ID = None, chavePrivada=None, endereco=None):
+    def __init__(self, apelido=None, numero=None, ID = None, chavePrivada=None, endereco=None, dicionario = None):
 
-        self.apelido = apelido
-        self.numero = numero
+        if dicionario:
+            self.importar(dicionario)
 
-        if chavePrivada and endereco and ID:
-            self.ID = ID
-            self.chavePrivada = SigningKey.from_string(chavePrivada)
-            self.chavePublica = self.chavePrivada.get_verifying_key()
-            self.endereco = endereco
+        else:
+            self.apelido = apelido
+            self.numero = numero
 
-        else: 
-            self.ID = uuid.uuid4()
-            self.chavePrivada = SigningKey.generate(curve=SECP256k1)
-            self.chavePublica = self.chavePrivada.get_verifying_key()
-            self.endereco = self.gerarEndereco()
+            if chavePrivada and endereco and ID:
+                self.ID = ID
+                self.chavePrivada = SigningKey.from_string(chavePrivada)
+                self.chavePublica = self.chavePrivada.get_verifying_key()
+                self.endereco = endereco
 
-        
-
+            else: 
+                self.ID = uuid.uuid4()
+                self.chavePrivada = SigningKey.generate(curve=SECP256k1)
+                self.chavePublica = self.chavePrivada.get_verifying_key()
+                self.endereco = self.gerarEndereco()
 
     def gerarEndereco(self):
         
@@ -57,6 +58,16 @@ class Candidato:
         return Hash.hexdigest()
 
 
+    def importar(self, dicionario):
+        self = Candidato(
+            apelido=dicionario['apelido'],
+            numero=dicionario['numero'],
+            ID=dicionario['id'],
+            chavePrivada=dicionario['chavePrivada'],
+            endereco=dicionario['endereco']
+        )
+        return self
+
     def paraJson(self):
         return json.dumps({
             'tipo':'regCandidato',
@@ -67,4 +78,5 @@ class Candidato:
             'chavePublica': binascii.hexlify(self.chavePublica.to_string()).decode(),
             'endereco':self.endereco,
             'hash': self.retornaHash()
-        })
+        },
+        indent=4)

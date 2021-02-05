@@ -2,7 +2,7 @@ from pymerkle import MerkleTree
 from modelos.candidato import Candidato
 from modelos.eleitor import Eleitor
 from modelos.utilitarios import Utilitarios
-import json
+import json, io, binascii
 
 class Registros:
     arvore = MerkleTree()
@@ -32,24 +32,42 @@ class Registros:
             json.dump(
                 {
                     'header': 'registros',
-                    'raiz': self.arvore.rootHash,
-                    'arvore': self.arvore.toJSONString(),
+                    'raiz': binascii.hexlify(self.arvore.rootHash).decode(),
+                    'arvore': self.arvore.serialize(),
                     'eleitores': [e.paraJson() for e in self.eleitores],
                     'candidatos': [c.paraJson() for c in self.candidatos],
                 }, 
-                f
+                f, indent=4
             )
             f.close()
 
     def importar(self, arquivo):
         util = Utilitarios()
-        with open(arquivo, 'r') as f:
-            tmp = json.load(f)
-            arv = open('arv_tmp.json', 'w')
-            json.dump(tmp['arvore'], arv)
-            arv.close()
-            self.arvore = MerkleTree.loadFromFile('arv_tmp.json')
-            self.eleitores.extend(tmp['eleitores'])
-            self.candidatos.extend(tmp['candidatos'])
+
+        if not isinstance(arquivo, io.TextIOWrapper):
+            try:
+                f = open(arquivo, 'r')
+            except IOError:
+                print("Arquivo indisponível")
+        else:
+            f = arquivo
+            
+        tmp = json.load(f)
+        arv = open('/tmp/arv_tmp.json', 'w')
+        json.dump(tmp['arvore'], arv)
+        arv.close()
+        self.arvore = MerkleTree.loadFromFile('/tmp/arv_tmp.json')
+        
+        eleitores = []
+        for e in tmp['eleitores']:
+            eleitores.append(Eleitor(e))
+        self.eleitores.extend(eleitores)
+
+        candidatos = []
+        for e in tmp['candidatos']:
+            candidatos.append(Eleitor(e))
+        self.candidatos.extend(candidatos)
+        
+        
         f.close()
         util.remover_seguramente('arv_tmp.json', 5)
