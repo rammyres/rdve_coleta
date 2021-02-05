@@ -2,7 +2,7 @@ import uuid, json
 
 class Cedula:
     ID = ''
-    _assinatura = ''
+    assinatura = ''
     _destino = ''
 
     @property
@@ -13,14 +13,6 @@ class Cedula:
     def destino(self, endereco_destino):
         self._destino = endereco_destino
 
-    @property
-    def assinatura(self):
-        return self._assinatura
-
-    @assinatura.setter
-    def assinatura(self, assinatura):
-        self._assinatura = assinatura
-
     def __init__(self):
         self.ID = uuid.uuid4()
 
@@ -28,6 +20,11 @@ class Cedula:
         return ':'.join(
             (self.ID, self.destino, 1)
         )
+    
+    def registrarVoto(self, destino, assinatura):
+        self.destino = destino
+        self.assinatura = assinatura
+
 
     def paraJson(self):
         return json.dumps(

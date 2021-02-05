@@ -5,6 +5,8 @@ from kivymd.app import MDApp
 import kivy.properties as kyprops
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.config import Config
+from kivy.uix.vkeyboard import VKeyboard 
 from modelos.eleitor import Eleitor
 from modelos.candidato import Candidato
 from modelos.registro import Registros
@@ -27,7 +29,7 @@ class TelaAlistamento(Screen):
 
         # Do something with the file
         except IOError:
-            print("File not accessible")
+            print("Arqivo não localizado")
         
     def novoEleitor(self):        
         eleitor = Eleitor(self.nEleitor.text)
@@ -36,7 +38,6 @@ class TelaAlistamento(Screen):
         self.registro.exportar('/tmp/registros.json')
         for e in self.eleitores:
             print(e.paraJson())
-        
 
 
 class TelaCandidatura(Screen):
@@ -52,7 +53,7 @@ class TelaCandidatura(Screen):
                 self.registro.importar(f)
                 
         except IOError:
-            print("File not accessible")
+            print("Arquivo não localizado")
         
     def novoCandidato(self):        
         candidato = Candidato(self.nCandidato.text, self.numCandidato.text)
@@ -67,9 +68,12 @@ class TelaCandidatura(Screen):
 class TelaUrna(Screen):
     pass
 
+class Teclado(VKeyboard):
+    pass
+
 
 class RDVEColetaApp(MDApp):
-
+    Config.set('kivy', 'keyboard_mode', 'systemandmulti')
     eleitores = []
     candidatos = []
     

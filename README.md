@@ -1,16 +1,10 @@
 # rdve_coleta
 
-A new Flutter project.
+Projeto combinado de coleta de dados e urna eletrônica do projeto RDVE
 
-## Getting Started
+## Iniciando
 
-This project is a starting point for a Flutter application.
+Esse projeto possui modulos de coleta e registro de votos do projeto de Registro Distribuido de Votação eletrônica (RDVE). 
 
-A few resources to get you started if this is your first Flutter project:
+No momento essa aplicação **não é compatível** com o [RDVE Wallet](https://github.com/rammyres/rdve_wallet), usando gerenciamento próprio de chaves. 
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
