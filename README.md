@@ -1,4 +1,4 @@
-# rdve_coleta
+# RDVE Coleta
 
 Projeto combinado de coleta de dados e urna eletrônica do projeto RDVE
 

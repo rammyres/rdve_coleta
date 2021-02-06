@@ -38,10 +38,14 @@ class UTXO:
         self.saldos.extend(utxo_candidatos)
         self.saldos.extend(utxo_eleitores)
 
-    def transferirSaldo(self, endereco_origem, endereco_destino):
-        tr = Transacao(endereco_destino=endereco_destino, endereco_origem=endereco_origem)
-        self.saldos[self.retornarIndicePorEndereco(endereco_origem)].reduzirSaldo(1)
-        self.saldos[self.retornarIndicePorEndereco(endereco_destino)].adicionarSaldo(tr)
+    def transferirSaldo(self, endereco_origem, endereco_destino, assinatura, saldo_transferido):
+        tr = Transacao(endereco_destino=endereco_destino, 
+                       endereco_origem=endereco_origem,
+                       saldo_transferido = saldo_transferido,
+                       assinatura= assinatura)
+        self.saldos[self.retornarIndicePorEndereco(endereco_origem)].reduzirSaldo(saldo_transferido)
+        self.saldos[self.retornarIndicePorEndereco(endereco_destino)].adicionarSaldo(saldo_transferido)
+        self.saldos[self.retornarIndicePorEndereco(endereco_destino)].transacoes.append(tr)
 
     def paraJson(self):
         return json.dumps(
