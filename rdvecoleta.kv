@@ -1,10 +1,13 @@
-
+#import colors kivymd.theming.ThemeManager.colors
 <MDRaisedButton>:
-    md_bg_color: 0, 0, 1, 1
+    # md_bg_color: 0, 0, 1, 1
     elevation_normal: 6
     font_size: 30
 
-
+<MDFillRoundFlatButton>:
+    font_size: 30
+    
+    md_bg_color: 0.012, 0.988, 0.906, 1
 
 <TelaColeta>:
     MDFloatLayout:
@@ -32,26 +35,74 @@
 
 <TelaUrna>:
     MDGridLayout:
+        size: root.size
         cols: 2
-        adaptive_size: True
-        md_bg_color: app.theme_cls.primary_color
-        MDBoxLayout:
-            pos_hint: {'x':0.2}
-            MDRaisedButton:
+        # root.theme_cls.primary_pallete: "Green"
+        
+        height: root.height
+        width: root.width        
+        MDGridLayout:
+            height: root.height
+            width: root.width*0.4
+            adaptive_width: True
+            MDTextField:
+                pos_hint: {'x': 0.5, 'y': 0.6 }
+                hint_text: "Nome do eleitor"
+                mode: "rectangle"
+                helper_text: "Digite aqui o nome do eleitor"
+        MDGridLayout:
+            pos_hint: {'x': 0.1, 'y': 0.5}
+            height: root.height
+            width: root.width*0.6
+            adaptive_width: True
+            cols: 3
+            padding: [10,10]
+            spacing: [10,10]
+            
+            MDFillRoundFlatButton:
                 text: '1'
-            MDRaisedButton:
+                text_color: 0, 0, 1, 1    
+            MDFillRoundFlatButton:
                 text: '2'
-            MDRaisedButton:
+                text_color: 0, 0, 1, 1  
+            MDFillRoundFlatButton:
                 text: '3'
-        MDBoxLayout:
-
-            pos_hint: {'x':0.5}
-            MDRaisedButton:
+                text_color: 0, 0, 1, 1  
+            MDFillRoundFlatButton:
+                text: '4'
+                text_color: 0, 0, 1, 1  
+            MDFillRoundFlatButton:
+                text: '5'
+                text_color: 0, 0, 1, 1  
+            MDFillRoundFlatButton:
+                text: '6'
+                text_color: 0, 0, 1, 1  
+            MDFillRoundFlatButton:
+                text: '7'
+                text_color: 0, 0, 1, 1  
+            MDFillRoundFlatButton:
+                text: '8'
+                text_color: 0, 0, 1, 1  
+            MDFillRoundFlatButton:
+                text: '9'
+                text_color: 0, 0, 1, 1  
+            MDFillRoundFlatButton:
+                text: ''
+                
+            MDFillRoundFlatButton:
+                text: '0'
+                text_color: 0, 0, 1, 1  
+            MDFillRoundFlatButton:
+                text: ''
+            
+        
+                        
+            MDFillRoundFlatButton:
                 text: 'Confirma'
-            MDRaisedButton:
+            MDFillRoundFlatButton:
                 text: 'Corrige'
         
-            MDRaisedButton:
+            MDFillRoundFlatButton:
                 text: 'Branco'
 
 

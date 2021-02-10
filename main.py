@@ -88,6 +88,7 @@ class RDVEColetaApp(MDApp):
         self.gerenciadorTela.add_widget(TelaColeta(name='TelaInicial'))
         self.gerenciadorTela.add_widget(TelaAlistamento(name='TelaAlistamento'))
         self.gerenciadorTela.add_widget(TelaCandidatura(name = 'TelaCandidatura'))
+        self.gerenciadorTela.add_widget(TelaUrna(name="TelaUrna"))
 
         
         self.gerenciadorTela.current='TelaInicial'
