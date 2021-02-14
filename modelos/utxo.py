@@ -7,14 +7,14 @@ class UTXO:
     registros = Registros()
     saldos = []
 
-    def __init__(self):
-        try:
-            with open("/tmp/registros.json", 'r') as f:
-                print(f)
-                self.registros.importar(f)
-        except IOError:
-            print("Arquivo inexistente")
-
+    def __init__(self, arquivo = None, arquivoRegistros = None):
+        if arquivo:
+            if self.importar(arquivo):
+                print("UTXO recuperado")
+            else:
+                if self.importarDosRegistros(arquivoRegistros):
+                    print("Endereços importados a partir dos registros")
+            
     def retornarIndicePorEndereco(self, endereco):
         for i in range(len(self.saldos)-1):
             if self.saldos[i].endereco == endereco:
@@ -38,6 +38,7 @@ class UTXO:
         self.saldos.extend(utxo_candidatos)
         self.saldos.extend(utxo_eleitores)
 
+
     def novoEndereco(self, endereco, tipo, saldo):
         self.saldos.append(Saldos(endereco=endereco,tipo=tipo, saldo=0, transacoes = None))
 
@@ -58,6 +59,33 @@ class UTXO:
             }
         )
 
+    def exportar(self, arquivo): 
+        with open(arquivo, 'w+') as f:
+            json.dump(
+                self.paraJson(), f, indent=4
+            )
+
+    def importar(self, arquivo):
+        try:
+            with open(arquivo, 'r') as f:
+                self.importarEnderecos(json.load(arquivo))
+                return True
+        except:
+            print("Arquivo não localizado")
+            
+        return False
+
+    def importarDosRegistros(self, arquivo):
+        try:
+            with open(arquivo, 'r') as f:
+                print(f)
+                self.registros.importar(f)
+                return True               
+        except IOError:
+            print("Arquivo inexistente")
+            
+        return False
+            
         
 
         

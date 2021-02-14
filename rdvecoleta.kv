@@ -1,4 +1,6 @@
-#import colors kivymd.theming.ThemeManager.colors
+
+#:import from_hex kivy.utils.get_color_from_hex
+#:import colors kivymd.color_definitions.colors
 <MDRaisedButton>:
     # md_bg_color: 0, 0, 1, 1
     elevation_normal: 6
@@ -6,8 +8,10 @@
 
 <MDFillRoundFlatButton>:
     font_size: 30
-    
-    md_bg_color: 0.012, 0.988, 0.906, 1
+    size_hint: None, None
+    height: 200
+    # md_bg_color: 0.012, 0.988, 0.906, 1
+    md_bg_color: from_hex(colors['LightBlue']['500'])
 
 <TelaColeta>:
     MDFloatLayout:
@@ -52,6 +56,7 @@
                 pos_hint: {"center_x": .5, "center_y": .5}
                 MDLabel:
                     text: "Nome e numero do candidato"
+                    font_size: 30
                 
         MDGridLayout:  
             cols: 1
@@ -74,57 +79,60 @@
                 spacing: [10,10]            
                 MDFillRoundFlatButton:
                     text: '1'
-                    text_color: 0, 0, 1, 1 
+                    
                     on_press: root.ao_tocar(self.text)
                 MDFillRoundFlatButton:
                     text: '2'
-                    text_color: 0, 0, 1, 1  
+                    
                     on_press: root.ao_tocar(self.text)
                 MDFillRoundFlatButton:
                     text: '3'
-                    text_color: 0, 0, 1, 1  
+                    
                     on_press: root.ao_tocar(self.text)
                 MDFillRoundFlatButton:
                     text: '4'
-                    text_color: 0, 0, 1, 1  
+                    
                     on_press: root.ao_tocar(self.text)
                 MDFillRoundFlatButton:
                     text: '5'
-                    text_color: 0, 0, 1, 1  
+                    
                     on_press: root.ao_tocar(self.text)
                 MDFillRoundFlatButton:
                     text: '6'
-                    text_color: 0, 0, 1, 1  
+                    
                     on_press: root.ao_tocar(self.text)
                 MDFillRoundFlatButton:
                     text: '7'
-                    text_color: 0, 0, 1, 1  
+                    
                     on_press: root.ao_tocar(self.text)
                 MDFillRoundFlatButton:
                     text: '8'
-                    text_color: 0, 0, 1, 1  
+                    
                     on_press: root.ao_tocar(self.text)
                 MDFillRoundFlatButton:
                     text: '9'
-                    text_color: 0, 0, 1, 1  
+                    
                     on_press: root.ao_tocar(self.text)
                 MDFillRoundFlatButton:
                     text: ''
                 MDFillRoundFlatButton:
-                    text: '0'
-                    text_color: 0, 0, 1, 1  
+                    text: '0'                    
                     on_press: root.ao_tocar(self.text)
                 MDFillRoundFlatButton:
                     text: ''                        
                 
                 MDFillRoundFlatButton:
                     text: 'Branco'
+                    text_color: 1, 1, 1, 1
                     on_press: root.ao_tocar("00")
                 MDFillRoundFlatButton:
                     text: 'Corrige'
+                    text_color: from_hex(colors["Orange"]["A100"])
                     on_press: root.corrige()
                 MDFillRoundFlatButton:
                     text: 'Confirma'
+
+                    text_color: from_hex(colors["Lime"]["A200"])
         
 
 

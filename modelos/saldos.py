@@ -4,8 +4,10 @@ from modelos.transacao import Transacao
 class Saldos:
     endereco = ''
     _tipo = ''
+    _numero = ''
     saldo = 0
     transacoes = []
+
     
     @property
     def tipo(self):
@@ -15,13 +17,24 @@ class Saldos:
     def tipo(self, tipo):
         if tipo == 'eleitor' or tipo == 'candidato' or tipo =='urna':
             self._tipo = tipo
+        
+    @property
+    def numero(self):
+        return self._numero
 
-    def __init__(self, endereco = None, tipo = None, saldo = None, transacoes = None, dicionario = None):
+    @numero.setter
+    def numero(self, numero):
+        if self.tipo == 'candidato':
+            self._numero = numero
+
+
+    def __init__(self, endereco = None, tipo = None, numero = None, saldo = None, transacoes = None, dicionario = None):
         if dicionario:
             self.importar(dicionario)
         else:
             self.endereco = endereco
             self.tipo = tipo
+            self.numero = numero
             self.adicionarSaldo(saldo)
             self.transacoes.extend(transacoes)
 
@@ -48,20 +61,44 @@ class Saldos:
             )
             transacoes.append(tr)
 
-        self = Saldos(
-            endereco=dicionario['endereco'],
-            tipo=dicionario['tipo'],
-            saldo=dicionario['saldo'],
-            transacoes=transacoes
-        )
+        if dicionario["tipo"] == 'candidato': 
+            self = Saldos(
+                endereco=dicionario['endereco'],
+                tipo=dicionario['tipo'],
+                numero=dicionario['numero'],
+                saldo=dicionario['saldo'],
+                transacoes=transacoes
+            )
+        else:
+            self = Saldos(
+                endereco=dicionario['endereco'],
+                tipo=dicionario['tipo'],
+                saldo=dicionario['saldo'],
+                transacoes=transacoes
+            )
     
     def paraJson(self):
-        return json.dumps(
+
+        if self.tipo == 'candidato':
+            dicionario = json.dumps(
+            {
+                'endereco': self.endereco,
+                'tipo': self.tipo,
+                'numero': self.numero,
+                'saldo': self.saldo,
+                'transacoes': [e.paraJson() for e in self.transacoes]
+            }, 
+            indent=4
+            )
+        else:
+            dicionario = json.dumps(
             {
                 'endereco': self.endereco,
                 'tipo': self.tipo,
                 'saldo': self.saldo,
                 'transacoes': [e.paraJson() for e in self.transacoes]
-            },
+            }, 
             indent=4
-        )
+            )
+
+        return dicionario
