@@ -34,78 +34,98 @@
             on_press: root.manager.current = 'TelaUrna'
 
 <TelaUrna>:
+    numCandidato:numCandidato 
     MDGridLayout:
         size: root.size
         cols: 2
         rows: 2
                 
-        height: root.height
-        width: root.width
-        MDBoxLayout:
-            # width: root.width/4
-            size_hint_x: 0.7
+        # height: root.height
+        # width: root.width
+        MDFloatLayout:
+            size_hint_x: 0.5
             padding: [10,10]
             spacing: [10,10]
-        
-            MDTextField:
-                # pos_hint: {'x': 0.5, 'y': .8}
-                hint_text: "Nome do eleitor"
-                mode: "rectangle"
-                helper_text: "Digite aqui o nome do eleitor"                    
-            
-        MDGridLayout:
-            
+            MDCard:
+                size_hint: None, None
+                size: "280dp", "180dp"
+                pos_hint: {"center_x": .5, "center_y": .5}
+                MDLabel:
+                    text: "Nome e numero do candidato"
+                
+        MDGridLayout:  
+            cols: 1
+            size_hint: None, None
             height: root.height
-            width: root.width*0.6
-
+            width: root.width*0.55
+            pos_hint: {"center_x": 0.5}
+            MDTextField:
+                id: numCandidato
+                size_hint: (None, None)
+                width: root.width/2
+                max_text_length: 5
+                hint_text: "Numero do candidato"
+                mode: "rectangle"
+                helper_text: "Digite o numero do candidato" 
+                on_text: root.ao_editar()
             MDGridLayout:
-                # pos_hint: {'x': .6}
                 cols: 3
                 padding: [10,10]
                 spacing: [10,10]            
                 MDFillRoundFlatButton:
                     text: '1'
-                    text_color: 0, 0, 1, 1    
+                    text_color: 0, 0, 1, 1 
+                    on_press: root.ao_tocar(self.text)
                 MDFillRoundFlatButton:
                     text: '2'
                     text_color: 0, 0, 1, 1  
+                    on_press: root.ao_tocar(self.text)
                 MDFillRoundFlatButton:
                     text: '3'
                     text_color: 0, 0, 1, 1  
+                    on_press: root.ao_tocar(self.text)
                 MDFillRoundFlatButton:
                     text: '4'
                     text_color: 0, 0, 1, 1  
+                    on_press: root.ao_tocar(self.text)
                 MDFillRoundFlatButton:
                     text: '5'
                     text_color: 0, 0, 1, 1  
+                    on_press: root.ao_tocar(self.text)
                 MDFillRoundFlatButton:
                     text: '6'
                     text_color: 0, 0, 1, 1  
+                    on_press: root.ao_tocar(self.text)
                 MDFillRoundFlatButton:
                     text: '7'
                     text_color: 0, 0, 1, 1  
+                    on_press: root.ao_tocar(self.text)
                 MDFillRoundFlatButton:
                     text: '8'
                     text_color: 0, 0, 1, 1  
+                    on_press: root.ao_tocar(self.text)
                 MDFillRoundFlatButton:
                     text: '9'
                     text_color: 0, 0, 1, 1  
+                    on_press: root.ao_tocar(self.text)
                 MDFillRoundFlatButton:
                     text: ''
-                    
                 MDFillRoundFlatButton:
                     text: '0'
                     text_color: 0, 0, 1, 1  
+                    on_press: root.ao_tocar(self.text)
                 MDFillRoundFlatButton:
                     text: ''                        
-                MDFillRoundFlatButton:
-                    text: 'Confirma'
-                MDFillRoundFlatButton:
-                    text: 'Corrige'
-            
+                
                 MDFillRoundFlatButton:
                     text: 'Branco'
-            
+                    on_press: root.ao_tocar("00")
+                MDFillRoundFlatButton:
+                    text: 'Corrige'
+                    on_press: root.corrige()
+                MDFillRoundFlatButton:
+                    text: 'Confirma'
+        
 
 
 <TelaAlistamento>:    

@@ -66,7 +66,17 @@ class TelaCandidatura(Screen):
     
 
 class TelaUrna(Screen):
-    pass
+    numCandidato = kyprops.ObjectProperty()
+    
+    def ao_tocar(self, texto): 
+        self.numCandidato.text += texto
+
+    def corrige(self):
+        self.numCandidato.text = ''
+
+    def ao_editar(self):
+        print(self.numCandidato.text)
+        
 
 class Teclado(VKeyboard):
     pass

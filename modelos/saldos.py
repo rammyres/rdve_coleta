@@ -42,7 +42,9 @@ class Saldos:
         for t in dicionario['transacoes']:
             tr = Transacao(
                 endereco_destino=t['endereco_destino'],
-                endereco_origem=t['endereco_origem']
+                endereco_origem=t['endereco_origem'],
+                saldo_transferido=t['saldo_transferido'],
+                assinatura=t['assinatura']
             )
             transacoes.append(tr)
 

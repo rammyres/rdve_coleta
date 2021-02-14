@@ -38,6 +38,9 @@ class UTXO:
         self.saldos.extend(utxo_candidatos)
         self.saldos.extend(utxo_eleitores)
 
+    def novoEndereco(self, endereco, tipo, saldo):
+        self.saldos.append(Saldos(endereco=endereco,tipo=tipo, saldo=0, transacoes = None))
+
     def transferirSaldo(self, endereco_origem, endereco_destino, assinatura, saldo_transferido):
         tr = Transacao(endereco_destino=endereco_destino, 
                        endereco_origem=endereco_origem,
