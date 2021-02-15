@@ -54,10 +54,11 @@ class UTXO:
                 self.saldos.append(Saldos(endereco=transacao.endereco,tipo=transacao.tipo_endereco, saldo=0, transacoes = None))
 
     def transferirSaldo(self, endereco_origem, endereco_destino, assinatura, saldo_transferido):
-        tr = Transacao(endereco_destino=endereco_destino, 
+        tr = Transacao(tipo='transferir_saldo',
+                       endereco_destino=endereco_destino, 
                        endereco_origem=endereco_origem,
                        saldo_transferido = saldo_transferido,
-                       assinatura= assinatura)
+                       assinatura=assinatura)
         self.saldos[self.retornarIndicePorEndereco(endereco_origem)].reduzirSaldo(saldo_transferido)
         self.saldos[self.retornarIndicePorEndereco(endereco_destino)].adicionarSaldo(saldo_transferido)
         self.saldos[self.retornarIndicePorEndereco(endereco_destino)].transacoes.append(tr)

@@ -17,16 +17,19 @@ class Transacao:
     def __init__(self, tipo = None, 
                        endereco = None, 
                        tipo_endereco = None,
+                       numero = None,
                        endereco_origem = None, 
                        endereco_destino = None, 
                        saldo_transferido = None, 
                        assinatura = None):
 
-        self.ID = uuid.uuid4()
+        self.ID = str(uuid.uuid4())
         if tipo == 'criar_endereco':
             self.tipo = tipo
             self.endereco = endereco
             self.tipo_endereco = tipo_endereco
+            if self.tipo_endereco == 'candidato':
+                self.numero = numero
         if tipo == 'transferir_saldo':
             self.endereco_destino = endereco_destino
             self.endereco_origem = endereco_origem
@@ -40,14 +43,25 @@ class Transacao:
         # dependendo do tipo de transação
         dados = ''
         if self.tipo == 'criar_endereco':
-            dados = ':'.join(
-            (
-                self.ID, 
-                self.endereco, 
-                self.tipo_endereco,
-                self.assinatura
-            )
-        )
+            if self.tipo_endereco == 'eleitor':
+                dados = ':'.join(
+                    (
+                    self.ID, 
+                    self.endereco, 
+                    self.tipo_endereco,
+                    self.assinatura
+                    )
+                )
+            if self.tipo_endereco == 'candidato':
+                dados = ':'.join(
+                    (
+                    self.ID, 
+                    self.endereco, 
+                    self.numero,
+                    self.tipo_endereco,
+                    self.assinatura
+                    )
+                )
 
         if self.tipo == 'transferir_saldo':
             dados = ':'.join(
@@ -59,6 +73,8 @@ class Transacao:
                 self.assinatura
             )
         )
+
+        print(dados)
 
         return dados
         
@@ -82,14 +98,27 @@ class Transacao:
                 }, indent=4
             )
         if self.tipo == 'criar_endereco':
-            dicionario = json.dumps(
-                {
-                   'id' : self.ID,
-                   'tipo': self.tipo,
-                   'tipo_endereco': self.tipo_endereco,
-                   'endereco': self.endereco,
-                   'assinatura': self.assinatura,
-                   'hash': self.Hash
-                }
-            )
+            if self.tipo_endereco == 'eleitor':
+                dicionario = json.dumps(
+                    {
+                    'id' : self.ID,
+                    'tipo': self.tipo,
+                    'tipo_endereco': self.tipo_endereco,
+                    'endereco': self.endereco,
+                    'assinatura': self.assinatura,
+                    'hash': self.Hash
+                    }
+                )
+            if self.tipo_endereco == 'candidato':
+                dicionario = json.dumps(
+                    {
+                    'id' : self.ID,
+                    'tipo': self.tipo,
+                    'tipo_endereco': self.tipo_endereco,
+                    'numero': self.numero,
+                    'endereco': self.endereco,
+                    'assinatura': self.assinatura,
+                    'hash': self.Hash
+                    }
+                )
         return dicionario

@@ -24,7 +24,7 @@ class Eleitor:
                 self.endereco = endereco
 
             else: 
-                self.ID = uuid.uuid4()
+                self.ID = str(uuid.uuid4())
                 self.chavePrivada = SigningKey.generate(curve=SECP256k1)
                 self.chavePublica = self.chavePrivada.get_verifying_key()
                 self.endereco = self.gerarEndereco()
@@ -42,23 +42,34 @@ class Eleitor:
         
         return enderecoPublico_b.decode()
 
-    def retornaHash(self):
-        
-
+    def dados(self):
         dados = ':'.join((
             str(self.ID),
             self.nome,
             binascii.hexlify(self.chavePublica.to_string()).hex(),
             self.endereco
-        ))
+            )
+        )
+
+        return dados
+
+
+    def retornaHash(self):      
 
         Hash = SHA256.new()
-        Hash.update(dados.encode())
+        Hash.update(self.dados().encode())
         
         return Hash.hexdigest()
 
     def assinar(self, dados):
-        return self.chavePrivada.sign(dados.encode()).to_string()
+        
+        assinatura = ''
+        if isinstance(dados, bytes):
+            assinatura = self.chavePrivada.sign(dados).to_string()
+        else:
+            assinatura = binascii.hexlify(self.chavePrivada.sign(bytes(dados, encoding='utf8'))).hex()
+        print(assinatura)
+        return assinatura
 
     def importar(self, dicionario):
         self = Eleitor(
@@ -73,7 +84,7 @@ class Eleitor:
         return json.dumps(
             {
             'tipo':'regEleitor',
-            'id': str(self.ID),
+            'id': self.ID,
             'nome':self.nome,
             'chavePrivada': binascii.hexlify(self.chavePrivada.to_string()).hex(),
             'chavePublica': binascii.hexlify(self.chavePublica.to_string()).hex(),
@@ -83,10 +94,11 @@ class Eleitor:
         indent=4
         )
 
-    def tranacaoCriacao(self):
+    def transacaoCriacao(self):
         transacao = Transacao(tipo='criar_endereco',
                               tipo_endereco='eleitor',
-                              endereco=self.endereco)
-        transacao.assinatura = self.assinar(transacao.dados)
-        transacao.gerarHash()
+                              endereco=self.endereco,
+                              assinatura="")
+        transacao.assinatura = self.assinar(transacao.dados())
+        transacao.gerarHash() 
         return transacao

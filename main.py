@@ -37,7 +37,7 @@ class TelaAlistamento(Screen):
         eleitor = Eleitor(self.nEleitor.text)
         self.eleitores.append(eleitor)
         self.registro.inserir(eleitor)
-        self.utxo.novoEndereco(endereco=eleitor.endereco, tipo='eleitor', saldo=0)
+        self.utxo.novoEndereco(eleitor.transacaoCriacao())
         self.registro.exportar('/tmp/registros.json')
         self.utxo.exportar(arquivo='/tmp/utxo.json')
         for e in self.eleitores:
@@ -64,7 +64,7 @@ class TelaCandidatura(Screen):
         candidato = Candidato(self.nCandidato.text, self.numCandidato.text)
         self.candidatos.append(candidato)
         self.registro.inserir(candidato)
-        self.utxo.novoEndereco(endereco=candidato.endereco, tipo='candidato', saldo=0)
+        self.utxo.novoEndereco(candidato.transacaoCriacao())
         self.registro.exportar('/tmp/registros.json')
         self.utxo.exportar(arquivo='/tmp/utxo.json')
         for c in self.candidatos:

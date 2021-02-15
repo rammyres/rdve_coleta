@@ -27,7 +27,7 @@ class Candidato:
                 self.endereco = endereco
 
             else: 
-                self.ID = uuid.uuid4()
+                self.ID = str(uuid.uuid4())
                 self.chavePrivada = SigningKey.generate(curve=SECP256k1)
                 self.chavePublica = self.chavePrivada.get_verifying_key()
                 self.endereco = self.gerarEndereco()
@@ -59,7 +59,15 @@ class Candidato:
         return Hash.hexdigest()
 
     def assinar(self, dados):
-        return self.chavePrivada.sign(dados.encode()).to_string()
+        print(type(dados))
+        print(dados)
+        assinatura = ''
+        if isinstance(dados, bytes):
+            assinatura = self.chavePrivada.sign(dados).to_string()
+        else:
+            assinatura = binascii.hexlify(self.chavePrivada.sign(bytes(dados, encoding='utf8'))).hex()
+        print(assinatura)
+        return assinatura
 
     def importar(self, dicionario):
         self = Candidato(
@@ -84,10 +92,12 @@ class Candidato:
         },
         indent=4)
     
-    def tranacaoCriacao(self):
+    def transacaoCriacao(self):
         transacao = Transacao(tipo='criar_endereco',
                               tipo_endereco='candidato',
-                              endereco=self.endereco)
-        transacao.assinatura = self.assinar(transacao.dados)
-        transacao.gerarHash()
+                              numero=self.numero,
+                              endereco=self.endereco,
+                              assinatura="")
+        transacao.assinatura = self.assinar(transacao.dados())
+        transacao.gerarHash() 
         return transacao
