@@ -20,6 +20,13 @@ class UTXO:
             if self.saldos[i].endereco == endereco:
                 return i
         return None
+
+    def retornarEnderecoPeloNumero(self, numero):
+        for s in self.saldos:
+            if s.tipo == 'candidato':
+                if s.numero == numero:
+                    return s.endereco
+        return None
     
     def importarEnderecos(self, registros):
         for e in self.registros.eleitores:
@@ -39,8 +46,12 @@ class UTXO:
         self.saldos.extend(utxo_eleitores)
 
 
-    def novoEndereco(self, endereco, tipo, saldo):
-        self.saldos.append(Saldos(endereco=endereco,tipo=tipo, saldo=0, transacoes = None))
+    def novoEndereco(self, transacao):
+        if transacao.tipo == 'criar_endereco':
+            if transacao.tipo == 'eleitor':
+                self.saldos.append(Saldos(endereco=transacao.endereco,tipo=transacao.tipo_endereco, saldo=1, transacoes = None))
+            if transacao.tipo == 'candidato': 
+                self.saldos.append(Saldos(endereco=transacao.endereco,tipo=transacao.tipo_endereco, saldo=0, transacoes = None))
 
     def transferirSaldo(self, endereco_origem, endereco_destino, assinatura, saldo_transferido):
         tr = Transacao(endereco_destino=endereco_destino, 
@@ -55,7 +66,7 @@ class UTXO:
         return json.dumps(
             {
                 'header': 'utxo',
-                'saldos': [s.paraJson for s in self.saldos]
+                'saldos': [s.paraJson() for s in self.saldos]
             }
         )
 
@@ -68,7 +79,7 @@ class UTXO:
     def importar(self, arquivo):
         try:
             with open(arquivo, 'r') as f:
-                self.importarEnderecos(json.load(arquivo))
+                self.importarEnderecos(json.load(f))
                 return True
         except:
             print("Arquivo não localizado")
@@ -76,12 +87,15 @@ class UTXO:
         return False
 
     def importarDosRegistros(self, arquivo):
+        
         try:
             with open(arquivo, 'r') as f:
                 print(f)
                 self.registros.importar(f)
                 return True               
         except IOError:
+            print("Arquivo inexistente")
+        except TypeError:
             print("Arquivo inexistente")
             
         return False

@@ -36,16 +36,29 @@ class Saldos:
             self.tipo = tipo
             self.numero = numero
             self.adicionarSaldo(saldo)
-            self.transacoes.extend(transacoes)
+            if transacoes:
+                self.transacoes.extend(transacoes)
 
-    def adicionarSaldo(self, transacao):
+    def adicionarSaldo(self, transacao = None, saldo = None):
+
+        print(transacao)
+        
         if self.tipo == 'eleitor':
-            if self.saldo == 0 and (self.saldo+transacao.saldo == 1):
-                self.saldo += transacao.saldo
+            if saldo: 
+                if self.saldo == 0 and (self.saldo+saldo == 1):
+                    self.saldo += saldo
+            if transacao:
+                if self.saldo == 0 and self.saldo+transacao.saldo == 1:
+                    self.saldo += transacao.saldo
+                
         else:
-            self.saldo += transacao.saldo
-
-        self.transacoes.append(transacao)
+            if saldo:
+                self.saldo += saldo
+            if transacao:
+                self.saldo += transacao.saldo
+        
+        if transacao:
+            self.transacoes.append(transacao)
 
     def reduzirSaldo(self, decrescimo):
         self.saldo -= decrescimo

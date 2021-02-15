@@ -1,5 +1,6 @@
 from ecdsa import SigningKey, VerifyingKey, SECP256k1
 from Crypto.Hash import RIPEMD160, SHA256
+from modelos.transacao import Transacao
 import binascii, hashlib, base58, json, uuid
 
 class Candidato:
@@ -57,6 +58,8 @@ class Candidato:
         Hash.update(dados.encode())
         return Hash.hexdigest()
 
+    def assinar(self, dados):
+        return self.chavePrivada.sign(dados.encode()).to_string()
 
     def importar(self, dicionario):
         self = Candidato(
@@ -80,3 +83,11 @@ class Candidato:
             'hash': self.retornaHash()
         },
         indent=4)
+    
+    def tranacaoCriacao(self):
+        transacao = Transacao(tipo='criar_endereco',
+                              tipo_endereco='candidato',
+                              endereco=self.endereco)
+        transacao.assinatura = self.assinar(transacao.dados)
+        transacao.gerarHash()
+        return transacao

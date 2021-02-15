@@ -11,12 +11,14 @@ from modelos.eleitor import Eleitor
 from modelos.candidato import Candidato
 from modelos.registro import Registros
 from modelos.utilitarios import Utilitarios
+from modelos.utxo import UTXO
 
 class TelaColeta(Screen):
     pass
 
 class TelaAlistamento(Screen):
     registro = Registros()
+    utxo = UTXO(arquivo='/tmp/utxo.json')
     eleitores = []
     nEleitor = kyprops.ObjectProperty()
 
@@ -35,13 +37,16 @@ class TelaAlistamento(Screen):
         eleitor = Eleitor(self.nEleitor.text)
         self.eleitores.append(eleitor)
         self.registro.inserir(eleitor)
+        self.utxo.novoEndereco(endereco=eleitor.endereco, tipo='eleitor', saldo=0)
         self.registro.exportar('/tmp/registros.json')
+        self.utxo.exportar(arquivo='/tmp/utxo.json')
         for e in self.eleitores:
             print(e.paraJson())
 
 
 class TelaCandidatura(Screen):
     candidatos = []
+    utxo = UTXO(arquivo='/tmp/utxo.json')
     registro = Registros()
     nCandidato = kyprops.ObjectProperty()
     numCandidato = kyprops.ObjectProperty()
@@ -59,11 +64,12 @@ class TelaCandidatura(Screen):
         candidato = Candidato(self.nCandidato.text, self.numCandidato.text)
         self.candidatos.append(candidato)
         self.registro.inserir(candidato)
+        self.utxo.novoEndereco(endereco=candidato.endereco, tipo='candidato', saldo=0)
         self.registro.exportar('/tmp/registros.json')
+        self.utxo.exportar(arquivo='/tmp/utxo.json')
         for c in self.candidatos:
             print(c.paraJson())
-    
-    
+        
 
 class TelaUrna(Screen):
     numCandidato = kyprops.ObjectProperty()
@@ -78,12 +84,9 @@ class TelaUrna(Screen):
         print(self.numCandidato.text)
         
 
-class Teclado(VKeyboard):
-    pass
-
 
 class RDVEColetaApp(MDApp):
-    Config.set('kivy', 'keyboard_mode', 'systemandmulti')
+    
     eleitores = []
     candidatos = []
     

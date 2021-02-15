@@ -1,5 +1,6 @@
 from ecdsa import SigningKey, VerifyingKey, SECP256k1
 from Crypto.Hash import RIPEMD160, SHA256
+from modelos.transacao import Transacao
 import binascii, hashlib, base58, json, uuid
 
 class Eleitor:
@@ -69,7 +70,8 @@ class Eleitor:
         return self
 
     def paraJson(self):
-        return json.dumps({
+        return json.dumps(
+            {
             'tipo':'regEleitor',
             'id': str(self.ID),
             'nome':self.nome,
@@ -77,4 +79,14 @@ class Eleitor:
             'chavePublica': binascii.hexlify(self.chavePublica.to_string()).hex(),
             'endereco':self.endereco,
             'hash': self.retornaHash().encode().decode()
-        }, indent=4)
+            }, 
+        indent=4
+        )
+
+    def tranacaoCriacao(self):
+        transacao = Transacao(tipo='criar_endereco',
+                              tipo_endereco='eleitor',
+                              endereco=self.endereco)
+        transacao.assinatura = self.assinar(transacao.dados)
+        transacao.gerarHash()
+        return transacao

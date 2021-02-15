@@ -2,24 +2,55 @@ import json, uuid
 from hashlib import sha256
 
 class Transacao:
-    ID = ''
-
-    endereco_origem = ''
-    endereco_destino = ''
-    saldo_transferido = 0
-    assinatura = ''
+    ID = '' # gerado automaticamente
+    tipo = '' # tipo de transação, pode ser criar_endereco ou transferir_saldo
+    tipo_endereco = '' # tipo do endereço criado, no caso de transação criar_endereco
+                       # podem ser eleitor, candidato ou urna
+    endereco = '' # endereco criado 
+    endereco_origem = '' # para transações transferir_saldo é o endereço que fornecerá
+                         # saldo para o endereco_destino
+    endereco_destino = '' 
+    saldo_transferido = 0 # por padrão o saldo a ser transferido é 0
+    assinatura = '' # assinatura referente a transação de criaçao de endereço é gerada pelo usuário
     Hash = ''
 
-    def __init__(self, endereco_origem, endereco_destino, saldo_transferido, assinatura):
+    def __init__(self, tipo = None, 
+                       endereco = None, 
+                       tipo_endereco = None,
+                       endereco_origem = None, 
+                       endereco_destino = None, 
+                       saldo_transferido = None, 
+                       assinatura = None):
+
         self.ID = uuid.uuid4()
-        self.endereco_destino = endereco_destino
-        self.endereco_origem = endereco_origem
-        self.saldo_transferido = saldo_transferido
+        if tipo == 'criar_endereco':
+            self.tipo = tipo
+            self.endereco = endereco
+            self.tipo_endereco = tipo_endereco
+        if tipo == 'transferir_saldo':
+            self.endereco_destino = endereco_destino
+            self.endereco_origem = endereco_origem
+            self.saldo_transferido = saldo_transferido
+
         self.assinatura = assinatura
 
 
     def dados(self): 
-        return ':'.join(
+        # Os dados utilizados para gerar os hashes serão automaticamente selecionados, 
+        # dependendo do tipo de transação
+        dados = ''
+        if self.tipo == 'criar_endereco':
+            dados = ':'.join(
+            (
+                self.ID, 
+                self.endereco, 
+                self.tipo_endereco,
+                self.assinatura
+            )
+        )
+
+        if self.tipo == 'transferir_saldo':
+            dados = ':'.join(
             (
                 self.ID,
                 self.endereco_origem,
@@ -28,22 +59,37 @@ class Transacao:
                 self.assinatura
             )
         )
+
+        return dados
         
     def gerarHash(self):
         h = sha256()
         h.update(self.dados().encode())
-
         return h.hexdigest()
-
     
     def paraJson(self):
-        return json.dumps(
-            {
-                'id': self.ID,
-                'endereco_origem': self.endereco_destino,
-                'endereco_destino': self.endereco_destino,
-                'saldo_transferido': self.saldo_transferido,
-                'assinatura': self.assinatura,
-                'hash': self.Hash
-            }, indent=4
-        )
+        dicionario = {}
+        if self.tipo == 'transferir_saldo':
+            dicionario = json.dumps(
+                {
+                    'id': self.ID,
+                    'tipo': self.tipo,
+                    'endereco_origem': self.endereco_destino,
+                    'endereco_destino': self.endereco_destino,
+                    'saldo_transferido': self.saldo_transferido,
+                    'assinatura': self.assinatura,
+                    'hash': self.Hash
+                }, indent=4
+            )
+        if self.tipo == 'criar_endereco':
+            dicionario = json.dumps(
+                {
+                   'id' : self.ID,
+                   'tipo': self.tipo,
+                   'tipo_endereco': self.tipo_endereco,
+                   'endereco': self.endereco,
+                   'assinatura': self.assinatura,
+                   'hash': self.Hash
+                }
+            )
+        return dicionario

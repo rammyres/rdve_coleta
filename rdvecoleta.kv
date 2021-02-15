@@ -57,6 +57,10 @@
                 MDLabel:
                     text: "Nome e numero do candidato"
                     font_size: 30
+            MDFillRoundFlatButton:
+                text: 'Voltar'
+                pos_hint: {"center_x": .5, "center_y": .1}
+                on_press: root.manager.current = 'TelaInicial'
                 
         MDGridLayout:  
             cols: 1
@@ -73,6 +77,7 @@
                 mode: "rectangle"
                 helper_text: "Digite o numero do candidato" 
                 on_text: root.ao_editar()
+    
             MDGridLayout:
                 cols: 3
                 padding: [10,10]
