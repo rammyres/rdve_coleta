@@ -14,6 +14,7 @@ class Transacao:
     assinatura = '' # assinatura referente a transação de criaçao de endereço é gerada pelo usuário
     Hash = ''
 
+#========================================================================================================
     def __init__(self, tipo = None, 
                        endereco = None, 
                        tipo_endereco = None,
@@ -38,6 +39,7 @@ class Transacao:
         self.assinatura = assinatura
 
 
+#========================================================================================================
     def dados(self): 
         # Os dados utilizados para gerar os hashes serão automaticamente selecionados, 
         # dependendo do tipo de transação
@@ -78,11 +80,13 @@ class Transacao:
 
         return dados
         
+#========================================================================================================
     def gerarHash(self):
         h = sha256()
         h.update(self.dados().encode())
         return h.hexdigest()
-    
+
+#========================================================================================================
     def paraJson(self):
         dicionario = {}
         if self.tipo == 'transferir_saldo':
@@ -121,4 +125,17 @@ class Transacao:
                     'hash': self.Hash
                     }
                 )
+
+            
         return dicionario
+
+#========================================================================================================
+    def importar(self, dicionario):
+        self.ID = dicionario['id']
+        self.tipo = dicionario['tipo']
+        self.endereco = dicionario['endereco']
+        self.assinatura = dicionario['assinatura']
+        self.Hash = dicionario['hash']  
+            
+        if dicionario['tipo_endereco'] == 'candidato':
+            self.numero = dicionario['numero']

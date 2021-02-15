@@ -8,7 +8,7 @@ class Saldos:
     saldo = 0
     transacoes = []
 
-    
+#========================================================================================================    
     @property
     def tipo(self):
         return self._tipo
@@ -27,74 +27,65 @@ class Saldos:
         if self.tipo == 'candidato':
             self._numero = numero
 
-
-    def __init__(self, processo, saldo_json = None, transacao_criacao = None):
+#========================================================================================================
+    def __init__(self, processo, saldo_json = None, transacao = None):
         # o processo pode ser recuperação (processo = 'recuperar'), com a importação do saldo a partir de um saldo em formato
         # json (saldo json) ou criação de uma nova entrada de saldo (processo = 'criar') e o próximo parametro será uma 
-        # transaçção de criação 
+        # transaçção de criação. Além disso poderá ser criada uma transação de movimentação (processo = transferir)
 
         if processo == "recuperar":
             if saldo_json:
                 self.importar(saldo_json)
-        if processo == "criar" and transacao_criacao:
-            self.endereco = transacao_criacao.endereco
-            self.tipo = tipo
-            self.numero = numero
-            self.adicionarSaldo(saldo)
-            if transacoes:
-                self.transacoes.extend(transacoes)
-
-    def adicionarSaldo(self, transacao = None):
-
-        print(transacao)
+        if processo == "criar" and transacao:
+            self.endereco = transacao.endereco
+            self.tipo = transacao.tipo_endereco
+            if transacao.tipo == "candidato":
+                self.numero = transacao.numero
         
-        if self.tipo == 'eleitor':
-            if saldo: 
-                if self.saldo == 0 and (self.saldo+saldo == 1):
-                    self.saldo += saldo
-            if transacao:
-                if self.saldo == 0 and self.saldo+transacao.saldo == 1:
-                    self.saldo += transacao.saldo
-                
-        else:
-            if saldo:
-                self.saldo += saldo
-            if transacao:
-                self.saldo += transacao.saldo
-        
-        if transacao:
-            self.transacoes.append(transacao)
+#========================================================================================================
+    def tranferir(self, transacao):
+        if not self.procurarTransacaoPorID(transacao.ID):
+            if self.endereco == transacao.endereco_destino:
+                self.adicionarSaldo(transacao.saldo_trasnferido)
+                self.transacoes.append(transacao)
+            if self.endereco == transacao.endereco_origem:
+                self.reduzirSaldo(transacao.saldo_transferido)
+                self.transacoes.append(transacao)
+#========================================================================================================
+    
+    def adicionarSaldo(self, acrescimo):
+        self.saldo+= acrescimo
+#========================================================================================================
 
     def reduzirSaldo(self, decrescimo):
         self.saldo -= decrescimo
 
+#========================================================================================================
     def importar(self, dicionario):
-        transacoes = []
-        for t in dicionario['transacoes']:
-            tr = Transacao(
-                endereco_destino=t['endereco_destino'],
-                endereco_origem=t['endereco_origem'],
-                saldo_transferido=t['saldo_transferido'],
-                assinatura=t['assinatura']
-            )
-            transacoes.append(tr)
+        print(dicionario)
+        self = Saldos(processo='criar')
+        self.endereco = dicionario['endereco']
+        self.tipo = dicionario['tipo']
+        self.saldo = dicionario['saldo']
 
-        if dicionario["tipo"] == 'candidato': 
-            self = Saldos(
-                endereco=dicionario['endereco'],
-                tipo=dicionario['tipo'],
-                numero=dicionario['numero'],
-                saldo=dicionario['saldo'],
-                transacoes=transacoes
-            )
-        else:
-            self = Saldos(
-                endereco=dicionario['endereco'],
-                tipo=dicionario['tipo'],
-                saldo=dicionario['saldo'],
-                transacoes=transacoes
-            )
+        if dicionario['tipo'] == 'candidato':
+            self.numero = dicionario['numero']
+
+        for t in dicionario['transacoes']:
+            tr = Transacao()
+            tr.importar(t)
+            self.transacoes.append(tr)
+
+        print(self.paraJson())
+
+#========================================================================================================
+    def procurarTransacaoPorID(self, id):
+        for t in self.transacoes:
+            if id == t.ID:
+                return self.transacoes.index(t)
+        return None
     
+#========================================================================================================
     def paraJson(self):
 
         if self.tipo == 'candidato':

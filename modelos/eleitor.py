@@ -9,6 +9,7 @@ class Eleitor:
     endereco = ''
     chavePrivada = None
     chavePublica = None
+    assinatura = ''
 
     def __init__(self, nome = None, ID = None, chavePrivada=None, endereco=None, dicionario = None):
 
@@ -28,6 +29,8 @@ class Eleitor:
                 self.chavePrivada = SigningKey.generate(curve=SECP256k1)
                 self.chavePublica = self.chavePrivada.get_verifying_key()
                 self.endereco = self.gerarEndereco()
+
+        self.assinatura = self.assinar(self.dados())
 
     def gerarEndereco(self):
         

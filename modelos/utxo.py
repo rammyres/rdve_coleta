@@ -29,18 +29,11 @@ class UTXO:
         return None
     
     def importarEnderecos(self, registros):
+        
         for e in self.registros.eleitores:
-            utxo_eleitores = Saldos(
-                endereco=e.endereco,
-                tipo='eleitor',
-                saldo=e.saldo,            
-            )
+            utxo_eleitores = Saldos(processo = 'criar', transacao=e.transacaoCriacao())
         for c in self.registros.candidatos:
-            utxo_candidatos = Saldos(
-                endereco=c.endereco,
-                tipo='candidato',
-                saldo=c.saldo,            
-            )
+            utxo_candidatos = Saldos(processo='criar', transacao =c.transacaoCriacao())
 
         self.saldos.extend(utxo_candidatos)
         self.saldos.extend(utxo_eleitores)
@@ -48,10 +41,8 @@ class UTXO:
 
     def novoEndereco(self, transacao):
         if transacao.tipo == 'criar_endereco':
-            if transacao.tipo_endereco == 'eleitor':
-                self.saldos.append(Saldos(endereco=transacao.endereco,tipo=transacao.tipo_endereco, saldo=1, transacoes = None))
-            if transacao.tipo_endereco == 'candidato': 
-                self.saldos.append(Saldos(endereco=transacao.endereco,tipo=transacao.tipo_endereco, saldo=0, transacoes = None))
+            self.saldos.append(Saldos(processo='criar', transacao =transacao))
+            
 
     def transferirSaldo(self, endereco_origem, endereco_destino, assinatura, saldo_transferido):
         tr = Transacao(tipo='transferir_saldo',
@@ -59,11 +50,12 @@ class UTXO:
                        endereco_origem=endereco_origem,
                        saldo_transferido = saldo_transferido,
                        assinatura=assinatura)
-        self.saldos[self.retornarIndicePorEndereco(endereco_origem)].reduzirSaldo(saldo_transferido)
-        self.saldos[self.retornarIndicePorEndereco(endereco_destino)].adicionarSaldo(saldo_transferido)
-        self.saldos[self.retornarIndicePorEndereco(endereco_destino)].transacoes.append(tr)
+        self.saldos[self.retornarIndicePorEndereco(endereco_origem)].tranferir(tr)
+        self.saldos[self.retornarIndicePorEndereco(endereco_destino)].tranferir(tr)
+        
 
     def paraJson(self):
+        print([s for s in self.saldos])
         return json.dumps(
             {
                 'header': 'utxo',
