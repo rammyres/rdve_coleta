@@ -48,9 +48,9 @@ class UTXO:
 
     def novoEndereco(self, transacao):
         if transacao.tipo == 'criar_endereco':
-            if transacao.tipo == 'eleitor':
+            if transacao.tipo_endereco == 'eleitor':
                 self.saldos.append(Saldos(endereco=transacao.endereco,tipo=transacao.tipo_endereco, saldo=1, transacoes = None))
-            if transacao.tipo == 'candidato': 
+            if transacao.tipo_endereco == 'candidato': 
                 self.saldos.append(Saldos(endereco=transacao.endereco,tipo=transacao.tipo_endereco, saldo=0, transacoes = None))
 
     def transferirSaldo(self, endereco_origem, endereco_destino, assinatura, saldo_transferido):

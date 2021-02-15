@@ -28,18 +28,23 @@ class Saldos:
             self._numero = numero
 
 
-    def __init__(self, endereco = None, tipo = None, numero = None, saldo = None, transacoes = None, dicionario = None):
-        if dicionario:
-            self.importar(dicionario)
-        else:
-            self.endereco = endereco
+    def __init__(self, processo, saldo_json = None, transacao_criacao = None):
+        # o processo pode ser recuperação (processo = 'recuperar'), com a importação do saldo a partir de um saldo em formato
+        # json (saldo json) ou criação de uma nova entrada de saldo (processo = 'criar') e o próximo parametro será uma 
+        # transaçção de criação 
+
+        if processo == "recuperar":
+            if saldo_json:
+                self.importar(saldo_json)
+        if processo == "criar" and transacao_criacao:
+            self.endereco = transacao_criacao.endereco
             self.tipo = tipo
             self.numero = numero
             self.adicionarSaldo(saldo)
             if transacoes:
                 self.transacoes.extend(transacoes)
 
-    def adicionarSaldo(self, transacao = None, saldo = None):
+    def adicionarSaldo(self, transacao = None):
 
         print(transacao)
         

@@ -65,6 +65,7 @@ class TelaCandidatura(Screen):
         self.candidatos.append(candidato)
         self.registro.inserir(candidato)
         self.utxo.novoEndereco(candidato.transacaoCriacao())
+        print(self.utxo.paraJson())
         self.registro.exportar('/tmp/registros.json')
         self.utxo.exportar(arquivo='/tmp/utxo.json')
         for c in self.candidatos:
