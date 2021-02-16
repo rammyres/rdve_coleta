@@ -19,6 +19,7 @@ class Registros:
                 self.arvore = MerkleTree.loadFromFile(f)
                 f.close()
 
+#========================================================================================================
     def inserir(self, elemento):
         if isinstance(elemento, Eleitor) or isinstance(elemento, Candidato):
             if isinstance(elemento, Eleitor):
@@ -27,6 +28,7 @@ class Registros:
                 self.candidatos.append(elemento)
             self.arvore.update(elemento.retornaHash())
     
+#========================================================================================================
     def exportar(self, arquivo):
         with open(arquivo, 'w') as f:
             json.dump(
@@ -37,10 +39,11 @@ class Registros:
                     'eleitores': [e.paraJson() for e in self.eleitores],
                     'candidatos': [c.paraJson() for c in self.candidatos],
                 }, 
-                f, indent=4
+                f
             )
             f.close()
 
+#========================================================================================================
     def importar(self, arquivo):
         util = Utilitarios()
 

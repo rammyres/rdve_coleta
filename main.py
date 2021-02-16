@@ -5,17 +5,24 @@ from kivymd.app import MDApp
 import kivy.properties as kyprops
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.boxlayout import BoxLayout
 from kivy.config import Config
-from kivy.uix.vkeyboard import VKeyboard 
+from kivymd.app import MDApp
+from kivymd.uix.button import MDFlatButton
+from kivymd.uix.dialog import MDDialog
 from modelos.eleitor import Eleitor
 from modelos.candidato import Candidato
 from modelos.registro import Registros
 from modelos.utilitarios import Utilitarios
 from modelos.utxo import UTXO
 
+#========================================================================================================
+#========================================================================================================
 class TelaColeta(Screen):
     pass
 
+#========================================================================================================
+#========================================================================================================
 class TelaAlistamento(Screen):
     registro = Registros()
     utxo = UTXO(arquivo='/tmp/utxo.json')
@@ -28,8 +35,6 @@ class TelaAlistamento(Screen):
                 print(f)
                 self.registro.importar(f)
                 
-
-        # Do something with the file
         except IOError:
             print("Arqivo não localizado")
         
@@ -43,6 +48,8 @@ class TelaAlistamento(Screen):
         for e in self.eleitores:
             print(e.paraJson())
 
+#========================================================================================================
+#========================================================================================================
 
 class TelaCandidatura(Screen):
     candidatos = []
@@ -51,6 +58,7 @@ class TelaCandidatura(Screen):
     nCandidato = kyprops.ObjectProperty()
     numCandidato = kyprops.ObjectProperty()
 
+#========================================================================================================
     def iniciar(self):
         try:
             with open("/tmp/registros.json", 'r') as f:
@@ -59,7 +67,8 @@ class TelaCandidatura(Screen):
                 
         except IOError:
             print("Arquivo não localizado")
-        
+
+#========================================================================================================
     def novoCandidato(self):        
         candidato = Candidato(self.nCandidato.text, self.numCandidato.text)
         self.candidatos.append(candidato)
@@ -70,27 +79,33 @@ class TelaCandidatura(Screen):
         self.utxo.exportar(arquivo='/tmp/utxo.json')
         for c in self.candidatos:
             print(c.paraJson())
-        
 
+#========================================================================================================        
+#========================================================================================================
+class Content(BoxLayout):
+    pass
+#========================================================================================================        
+#========================================================================================================
 class TelaUrna(Screen):
+    # eleitor = Eleitor()
+    eleitores = []
+    candidatos = []
     numCandidato = kyprops.ObjectProperty()
     
     def ao_tocar(self, texto): 
         self.numCandidato.text += texto
 
+#========================================================================================================
     def corrige(self):
         self.numCandidato.text = ''
 
+#========================================================================================================
     def ao_editar(self):
         print(self.numCandidato.text)
-        
 
-
+#========================================================================================================
+#========================================================================================================
 class RDVEColetaApp(MDApp):
-    
-    eleitores = []
-    candidatos = []
-    
     
     def novoCandidato(self, apelido, numero):
         candidato = Candidato(apelido, numero)

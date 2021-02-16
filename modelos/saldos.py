@@ -89,6 +89,8 @@ class Saldos:
     def paraJson(self):
 
         if self.tipo == 'candidato':
+            for e in self.transacoes:
+                print(e.paraJson())
             dicionario = json.dumps(
             {
                 'endereco': self.endereco,
@@ -101,13 +103,12 @@ class Saldos:
             )
         else:
             dicionario = json.dumps(
-            {
-                'endereco': self.endereco,
-                'tipo': self.tipo,
-                'saldo': self.saldo,
-                'transacoes': [e.paraJson() for e in self.transacoes]
-            }, 
-            indent=4
+                {
+                    'endereco': self.endereco,
+                    'tipo': self.tipo,
+                    'saldo': self.saldo,
+                    'transacoes': [e.paraJson() for e in self.transacoes]
+                }
             )
 
         return dicionario

@@ -31,7 +31,8 @@ class Candidato:
                 self.chavePrivada = SigningKey.generate(curve=SECP256k1)
                 self.chavePublica = self.chavePrivada.get_verifying_key()
                 self.endereco = self.gerarEndereco()
-
+                
+#========================================================================================================
     def gerarEndereco(self):
         
         chavePublica = '04' + binascii.hexlify(self.chavePublica.to_string()).decode()
@@ -45,6 +46,7 @@ class Candidato:
         
         return enderecoPublico_b.decode()
 
+#========================================================================================================
     def retornaHash(self):
         dados = ':'.join((
             str(self.ID),
@@ -58,6 +60,7 @@ class Candidato:
         Hash.update(dados.encode())
         return Hash.hexdigest()
 
+#========================================================================================================
     def assinar(self, dados):
         print(type(dados))
         print(dados)
@@ -69,6 +72,7 @@ class Candidato:
         print(assinatura)
         return assinatura
 
+#========================================================================================================
     def importar(self, dicionario):
         self = Candidato(
             apelido=dicionario['apelido'],
@@ -79,19 +83,22 @@ class Candidato:
         )
         return self
 
+#========================================================================================================
     def paraJson(self):
-        return json.dumps({
-            'tipo':'regCandidato',
-            'id': str(self.ID),
-            'apelido':self.apelido,
-            'numero': self.numero,
-            'chavePrivada': binascii.hexlify(self.chavePrivada.to_string()).decode(),
-            'chavePublica': binascii.hexlify(self.chavePublica.to_string()).decode(),
-            'endereco':self.endereco,
-            'hash': self.retornaHash()
-        },
-        indent=4)
-    
+        return json.dumps(
+            {
+                'tipo':'regCandidato',
+                'id': str(self.ID),
+                'apelido':self.apelido,
+                'numero': self.numero,
+                'chavePrivada': binascii.hexlify(self.chavePrivada.to_string()).decode(),
+                'chavePublica': binascii.hexlify(self.chavePublica.to_string()).decode(),
+                'endereco':self.endereco,
+                'hash': self.retornaHash()
+            }
+        )
+
+#========================================================================================================
     def transacaoCriacao(self):
         transacao = Transacao(tipo='criar_endereco',
                               tipo_endereco='candidato',

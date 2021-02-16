@@ -1,6 +1,7 @@
 from ecdsa import SigningKey, VerifyingKey, SECP256k1
 from Crypto.Hash import RIPEMD160, SHA256
 from modelos.transacao import Transacao
+from datetime import datetime
 import binascii, hashlib, base58, json, uuid
 
 class Eleitor:
@@ -32,6 +33,7 @@ class Eleitor:
 
         self.assinatura = self.assinar(self.dados())
 
+#========================================================================================================
     def gerarEndereco(self):
         
         chavePublica = '04' + binascii.hexlify(self.chavePublica.to_string()).decode()
@@ -45,6 +47,7 @@ class Eleitor:
         
         return enderecoPublico_b.decode()
 
+#========================================================================================================
     def dados(self):
         dados = ':'.join((
             str(self.ID),
@@ -56,7 +59,7 @@ class Eleitor:
 
         return dados
 
-
+#========================================================================================================
     def retornaHash(self):      
 
         Hash = SHA256.new()
@@ -64,6 +67,7 @@ class Eleitor:
         
         return Hash.hexdigest()
 
+#========================================================================================================
     def assinar(self, dados):
         
         assinatura = ''
@@ -74,6 +78,7 @@ class Eleitor:
         print(assinatura)
         return assinatura
 
+#========================================================================================================
     def importar(self, dicionario):
         self = Eleitor(
             nome = dicionario['nome'],
@@ -83,6 +88,7 @@ class Eleitor:
         )
         return self
 
+#========================================================================================================
     def paraJson(self):
         return json.dumps(
             {
@@ -93,10 +99,10 @@ class Eleitor:
             'chavePublica': binascii.hexlify(self.chavePublica.to_string()).hex(),
             'endereco':self.endereco,
             'hash': self.retornaHash().encode().decode()
-            }, 
-        indent=4
+            }
         )
 
+#========================================================================================================
     def transacaoCriacao(self):
         transacao = Transacao(tipo='criar_endereco',
                               tipo_endereco='eleitor',
@@ -105,3 +111,22 @@ class Eleitor:
         transacao.assinatura = self.assinar(transacao.dados())
         transacao.gerarHash() 
         return transacao
+
+#========================================================================================================
+    def requererVoto(self):
+        reqID = str(uuid.uuid4())
+        timestamp = str(datetime.now().timestamp())
+        dados = ':'.join((self.ID, reqID, timestamp))
+
+        with open('/tmp/reqvoto.json') as f:
+            json.dump(
+                {
+                    'id_eleitor': self.ID,
+                    'reqID': reqID,
+                    'timestamp': timestamp,
+                    'assinatura': self.assinar(binascii.hexlify(dados))
+                },
+                f
+        )
+
+
