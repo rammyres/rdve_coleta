@@ -41,16 +41,18 @@ class Saldos:
             self.tipo = transacao.tipo_endereco
             if transacao.tipo == "candidato":
                 self.numero = transacao.numero
+            self.inserirTransacao(transacao)
+            self.adicionarSaldo(1)
         
 #========================================================================================================
     def tranferir(self, transacao):
         if not self.procurarTransacaoPorID(transacao.ID):
             if self.endereco == transacao.endereco_destino:
                 self.adicionarSaldo(transacao.saldo_trasnferido)
-                self.transacoes.append(transacao)
+                self.inserirTransacao(transacao)
             if self.endereco == transacao.endereco_origem:
                 self.reduzirSaldo(transacao.saldo_transferido)
-                self.transacoes.append(transacao)
+                self.inserirTransacao(transacao)
 #========================================================================================================
     
     def adicionarSaldo(self, acrescimo):
@@ -59,7 +61,16 @@ class Saldos:
 
     def reduzirSaldo(self, decrescimo):
         self.saldo -= decrescimo
-
+#========================================================================================================
+    def inserirTransacao(self, transacao):
+        if transacao.tipo == 'criar_endereco': 
+            if transacao.endereco == self.endereco: 
+                print(self.procurarTransacaoPorID(transacao.ID))
+                if not self.procurarTransacaoPorID(transacao.ID):
+                    self.transacoes.append(transacao)
+        elif transacao.endereco_origem == self.endereco or transacao.endereco_destino:
+            if not self.procurarTransacaoPorID(transacao.ID):
+                self.transacoes.append(transacao)
 #========================================================================================================
     def importar(self, dicionario):
         print(dicionario)
@@ -74,9 +85,9 @@ class Saldos:
         for t in dicionario['transacoes']:
             tr = Transacao()
             tr.importar(t)
-            self.transacoes.append(tr)
+            self.inserirTransacao(tr)
 
-        print(self.paraJson())
+        print(self.serializar())
 
 #========================================================================================================
     def procurarTransacaoPorID(self, id):
@@ -86,29 +97,24 @@ class Saldos:
         return None
     
 #========================================================================================================
-    def paraJson(self):
+    def serializar(self):
 
         if self.tipo == 'candidato':
             for e in self.transacoes:
-                print(e.paraJson())
-            dicionario = json.dumps(
-            {
+                print([e.serializar() for e in self.transacoes])
+            dicionario = {
                 'endereco': self.endereco,
                 'tipo': self.tipo,
                 'numero': self.numero,
                 'saldo': self.saldo,
-                'transacoes': [e.paraJson() for e in self.transacoes]
-            }, 
-            indent=4
-            )
+                'transacoes': [e.serializar() for e in self.transacoes]
+            }
         else:
-            dicionario = json.dumps(
-                {
+            dicionario = {
                     'endereco': self.endereco,
                     'tipo': self.tipo,
                     'saldo': self.saldo,
-                    'transacoes': [e.paraJson() for e in self.transacoes]
+                    'transacoes': [e.serializar() for e in self.transacoes]
                 }
-            )
 
         return dicionario

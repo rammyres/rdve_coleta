@@ -10,7 +10,8 @@ class Eleitor:
     endereco = ''
     chavePrivada = None
     chavePublica = None
-    assinatura = ''
+    Hash = ''
+    
 
     def __init__(self, nome = None, ID = None, chavePrivada=None, endereco=None, dicionario = None):
 
@@ -20,10 +21,13 @@ class Eleitor:
         else:  
             self.nome = nome
             if chavePrivada and endereco and ID:
+                print("Importando na inicialização")
                 self.ID = ID
-                self.chavePrivada = SigningKey.from_string(chavePrivada)
+                self.chavePrivada = SigningKey.from_string(string=binascii.unhexlify(chavePrivada), curve=SECP256k1)
                 self.chavePublica = self.chavePrivada.get_verifying_key()
                 self.endereco = endereco
+                print("Chave privada {}".format(binascii.hexlify(self.chavePrivada.to_string())))
+                print("Chave publica {}".format(binascii.hexlify(self.chavePublica.to_string())))
 
             else: 
                 self.ID = str(uuid.uuid4())
@@ -31,7 +35,7 @@ class Eleitor:
                 self.chavePublica = self.chavePrivada.get_verifying_key()
                 self.endereco = self.gerarEndereco()
 
-        self.assinatura = self.assinar(self.dados())
+            self.gerarHash()
 
 #========================================================================================================
     def gerarEndereco(self):
@@ -49,8 +53,10 @@ class Eleitor:
 
 #========================================================================================================
     def dados(self):
+        print(self.endereco)
+        print("{} - {} - {} - {}".format(self.ID, self.nome, self.chavePublica.to_string(), self.endereco))
         dados = ':'.join((
-            str(self.ID),
+            self.ID,
             self.nome,
             binascii.hexlify(self.chavePublica.to_string()).hex(),
             self.endereco
@@ -60,12 +66,12 @@ class Eleitor:
         return dados
 
 #========================================================================================================
-    def retornaHash(self):      
+    def gerarHash(self):      
 
         Hash = SHA256.new()
         Hash.update(self.dados().encode())
         
-        return Hash.hexdigest()
+        self.Hash = Hash.hexdigest()
 
 #========================================================================================================
     def assinar(self, dados):
@@ -80,6 +86,7 @@ class Eleitor:
 
 #========================================================================================================
     def importar(self, dicionario):
+        print("Importando...")
         self = Eleitor(
             nome = dicionario['nome'],
             ID = dicionario['id'],
@@ -89,19 +96,18 @@ class Eleitor:
         return self
 
 #========================================================================================================
-    def paraJson(self):
-        return json.dumps(
-            {
+    def serializar(self):
+        
+        return {
             'tipo':'regEleitor',
             'id': self.ID,
             'nome':self.nome,
-            'chavePrivada': binascii.hexlify(self.chavePrivada.to_string()).hex(),
-            'chavePublica': binascii.hexlify(self.chavePublica.to_string()).hex(),
+            'chavePrivada': binascii.hexlify(self.chavePrivada.to_string()).decode(),
+            'chavePublica': binascii.hexlify(self.chavePublica.to_string()).decode(),
             'endereco':self.endereco,
-            'hash': self.retornaHash().encode().decode()
+            'hash': self.Hash
             }
-        )
-
+        
 #========================================================================================================
     def transacaoCriacao(self):
         transacao = Transacao(tipo='criar_endereco',
@@ -124,7 +130,7 @@ class Eleitor:
                     'id_eleitor': self.ID,
                     'reqID': reqID,
                     'timestamp': timestamp,
-                    'assinatura': self.assinar(binascii.hexlify(dados))
+                    'assinatura': self.assinar(binascii.hexlify(dados).decode())
                 },
                 f
         )

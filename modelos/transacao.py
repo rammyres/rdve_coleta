@@ -84,14 +84,13 @@ class Transacao:
     def gerarHash(self):
         h = sha256()
         h.update(self.dados().encode())
-        return h.hexdigest()
+        self.Hash = h.hexdigest()
 
 #========================================================================================================
-    def paraJson(self):
+    def serializar(self):
         dicionario = {}
         if self.tipo == 'transferir_saldo':
-            dicionario = json.dumps(
-                {
+            dicionario = {
                     'id': self.ID,
                     'tipo': self.tipo,
                     'endereco_origem': self.endereco_destino,
@@ -99,12 +98,10 @@ class Transacao:
                     'saldo_transferido': self.saldo_transferido,
                     'assinatura': self.assinatura,
                     'hash': self.Hash
-                }, indent=4
-            )
+                }
         if self.tipo == 'criar_endereco':
             if self.tipo_endereco == 'eleitor':
-                dicionario = json.dumps(
-                    {
+                dicionario = {
                     'id' : self.ID,
                     'tipo': self.tipo,
                     'tipo_endereco': self.tipo_endereco,
@@ -112,10 +109,8 @@ class Transacao:
                     'assinatura': self.assinatura,
                     'hash': self.Hash
                     }
-                )
             if self.tipo_endereco == 'candidato':
-                dicionario = json.dumps(
-                    {
+                dicionario = {
                     'id' : self.ID,
                     'tipo': self.tipo,
                     'tipo_endereco': self.tipo_endereco,
@@ -124,8 +119,6 @@ class Transacao:
                     'assinatura': self.assinatura,
                     'hash': self.Hash
                     }
-                )
-
             
         return dicionario
 

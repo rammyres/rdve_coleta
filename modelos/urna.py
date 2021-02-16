@@ -15,14 +15,12 @@ class registroComparecimento:
         self.assinatura = assinatura
 
 #========================================================================================================
-    def paraJson(self):
-        return json.dumps(
-            {
+    def serializar(self):
+        return {
                 'id_eleitor': self.id_eleitor,
                 'timestamp': str(datetime.datetime.now().timestamp()),
                 'assinatura': self.assinatura
             }
-        )
 
 #========================================================================================================
 class Urna:

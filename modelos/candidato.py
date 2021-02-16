@@ -10,6 +10,7 @@ class Candidato:
     endereco = ''
     chavePrivada = None
     chavePublica = None
+    Hash = ''
     
     def __init__(self, apelido=None, numero=None, ID = None, chavePrivada=None, endereco=None, dicionario = None):
 
@@ -31,6 +32,8 @@ class Candidato:
                 self.chavePrivada = SigningKey.generate(curve=SECP256k1)
                 self.chavePublica = self.chavePrivada.get_verifying_key()
                 self.endereco = self.gerarEndereco()
+
+        self.gerarHash()
                 
 #========================================================================================================
     def gerarEndereco(self):
@@ -47,7 +50,7 @@ class Candidato:
         return enderecoPublico_b.decode()
 
 #========================================================================================================
-    def retornaHash(self):
+    def gerarHash(self):
         dados = ':'.join((
             str(self.ID),
             self.apelido,
@@ -58,7 +61,7 @@ class Candidato:
 
         Hash = SHA256.new()
         Hash.update(dados.encode())
-        return Hash.hexdigest()
+        self.Hash = Hash.hexdigest()
 
 #========================================================================================================
     def assinar(self, dados):
@@ -84,9 +87,8 @@ class Candidato:
         return self
 
 #========================================================================================================
-    def paraJson(self):
-        return json.dumps(
-            {
+    def serializar(self):
+        return {
                 'tipo':'regCandidato',
                 'id': str(self.ID),
                 'apelido':self.apelido,
@@ -94,10 +96,9 @@ class Candidato:
                 'chavePrivada': binascii.hexlify(self.chavePrivada.to_string()).decode(),
                 'chavePublica': binascii.hexlify(self.chavePublica.to_string()).decode(),
                 'endereco':self.endereco,
-                'hash': self.retornaHash()
+                'hash': self.Hash
             }
-        )
-
+        
 #========================================================================================================
     def transacaoCriacao(self):
         transacao = Transacao(tipo='criar_endereco',

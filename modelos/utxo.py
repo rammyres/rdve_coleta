@@ -44,7 +44,7 @@ class UTXO:
 #========================================================================================================
     def novoEndereco(self, transacao):
         if transacao.tipo == 'criar_endereco':
-            self.saldos.append(Saldos(processo='criar', transacao =transacao))
+            self.saldos.append(Saldos(processo='criar', transacao=transacao))
             
 #========================================================================================================
     def transferirSaldo(self, endereco_origem, endereco_destino, assinatura, saldo_transferido):
@@ -57,19 +57,17 @@ class UTXO:
         self.saldos[self.retornarIndicePorEndereco(endereco_destino)].tranferir(tr)
         
 #========================================================================================================
-    def paraJson(self):
-        return json.dumps(
-            {
+    def serializar(self):
+        return {
                 'header': 'utxo',
-                'saldos': [s.paraJson() for s in self.saldos]
+                'saldos': [s.serializar() for s in self.saldos]
             }
-        )
-
+        
 #========================================================================================================
     def exportar(self, arquivo): 
         with open(arquivo, 'w+') as f:
             json.dump(
-                self.paraJson(), f, indent=4
+                self.serializar(), f, indent=4
             )
 
 #========================================================================================================

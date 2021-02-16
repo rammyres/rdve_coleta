@@ -21,12 +21,15 @@ class Registros:
 
 #========================================================================================================
     def inserir(self, elemento):
+        print(elemento)
+        print(elemento.Hash)
         if isinstance(elemento, Eleitor) or isinstance(elemento, Candidato):
             if isinstance(elemento, Eleitor):
                 self.eleitores.append(elemento)
             if isinstance(elemento, Candidato):
                 self.candidatos.append(elemento)
-            self.arvore.update(elemento.retornaHash())
+            
+            self.arvore.update(elemento.Hash)
     
 #========================================================================================================
     def exportar(self, arquivo):
@@ -36,10 +39,10 @@ class Registros:
                     'header': 'registros',
                     'raiz': binascii.hexlify(self.arvore.rootHash).decode(),
                     'arvore': self.arvore.serialize(),
-                    'eleitores': [e.paraJson() for e in self.eleitores],
-                    'candidatos': [c.paraJson() for c in self.candidatos],
+                    'eleitores': [e.serializar() for e in self.eleitores],
+                    'candidatos': [c.serializar() for c in self.candidatos],
                 }, 
-                f
+                f, indent=4
             )
             f.close()
 
@@ -61,14 +64,12 @@ class Registros:
         arv.close()
         self.arvore = MerkleTree.loadFromFile('/tmp/arv_tmp.json')
         
-        eleitores = []
-        for e in tmp['eleitores']:
-            eleitores.append(Eleitor(e))
+        eleitores = [Eleitor(dicionario=e) for e in tmp['eleitores']]
         self.eleitores.extend(eleitores)
 
         candidatos = []
         for e in tmp['candidatos']:
-            candidatos.append(Eleitor(e))
+            candidatos.append(Candidato(dicionario=e))
         self.candidatos.extend(candidatos)
         
         

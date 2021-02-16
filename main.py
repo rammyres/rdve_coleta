@@ -32,7 +32,7 @@ class TelaAlistamento(Screen):
     def iniciar(self):
         try:
             with open("/tmp/registros.json", 'r') as f:
-                print(f)
+                # print(f)
                 self.registro.importar(f)
                 
         except IOError:
@@ -46,7 +46,8 @@ class TelaAlistamento(Screen):
         self.registro.exportar('/tmp/registros.json')
         self.utxo.exportar(arquivo='/tmp/utxo.json')
         for e in self.eleitores:
-            print(e.paraJson())
+            print(e.serializar())
+        self.nEleitor.text = ''
 
 #========================================================================================================
 #========================================================================================================
@@ -74,11 +75,11 @@ class TelaCandidatura(Screen):
         self.candidatos.append(candidato)
         self.registro.inserir(candidato)
         self.utxo.novoEndereco(candidato.transacaoCriacao())
-        print(self.utxo.paraJson())
+        print(self.utxo.serializar())
         self.registro.exportar('/tmp/registros.json')
         self.utxo.exportar(arquivo='/tmp/utxo.json')
         for c in self.candidatos:
-            print(c.paraJson())
+            print(c.serializar())
 
 #========================================================================================================        
 #========================================================================================================
