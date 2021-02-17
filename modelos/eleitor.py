@@ -13,30 +13,37 @@ class Eleitor:
     Hash = ''
     
 
-    def __init__(self, nome = None, ID = None, chavePrivada=None, endereco=None, dicionario = None):
+    def __init__(self, 
+            processo,
+            nome = None, 
+            ID = None, 
+            chavePrivada=None, 
+            endereco=None, 
+            dicionario = None):
 
-        if dicionario:
+        
+        if processo == 'importar' and dicionario:
             self.importar(dicionario)
 
-        else:  
+        elif processo == 'importacao_interna' :  
             self.nome = nome
-            if chavePrivada and endereco and ID:
-                print("Importando na inicialização")
-                self.ID = ID
-                self.chavePrivada = SigningKey.from_string(string=binascii.unhexlify(chavePrivada), curve=SECP256k1)
-                self.chavePublica = self.chavePrivada.get_verifying_key()
-                self.endereco = endereco
-                print("Chave privada {}".format(binascii.hexlify(self.chavePrivada.to_string())))
-                print("Chave publica {}".format(binascii.hexlify(self.chavePublica.to_string())))
+            self.ID = ID
+            self.chavePrivada = SigningKey.from_string(string=binascii.unhexlify(chavePrivada), curve=SECP256k1)
+            self.chavePublica = self.chavePrivada.get_verifying_key()
+            self.endereco = endereco
 
-            else: 
-                self.ID = str(uuid.uuid4())
-                self.chavePrivada = SigningKey.generate(curve=SECP256k1)
-                self.chavePublica = self.chavePrivada.get_verifying_key()
-                self.endereco = self.gerarEndereco()
+        elif processo == 'criar' and nome: 
+            self.nome = nome
+            self.ID = str(uuid.uuid4())
+            self.chavePrivada = SigningKey.generate(curve=SECP256k1)
+            self.chavePublica = self.chavePrivada.get_verifying_key()
+            self.endereco = self.gerarEndereco()
 
-            self.gerarHash()
+        else:
+            raise TypeError("A criação do eleitor falhou")
 
+        self.gerarHash()
+        
 #========================================================================================================
     def gerarEndereco(self):
         
@@ -53,8 +60,7 @@ class Eleitor:
 
 #========================================================================================================
     def dados(self):
-        print(self.endereco)
-        print("{} - {} - {} - {}".format(self.ID, self.nome, self.chavePublica.to_string(), self.endereco))
+        
         dados = ':'.join((
             self.ID,
             self.nome,
@@ -81,13 +87,14 @@ class Eleitor:
             assinatura = self.chavePrivada.sign(dados).to_string()
         else:
             assinatura = binascii.hexlify(self.chavePrivada.sign(bytes(dados, encoding='utf8'))).hex()
-        print(assinatura)
+        
         return assinatura
 
 #========================================================================================================
     def importar(self, dicionario):
         print("Importando...")
         self = Eleitor(
+            processo='impotacao_interna',
             nome = dicionario['nome'],
             ID = dicionario['id'],
             chavePrivada=dicionario['chavePrivada'],

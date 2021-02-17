@@ -2,7 +2,7 @@ from pymerkle import MerkleTree
 from modelos.candidato import Candidato
 from modelos.eleitor import Eleitor
 from modelos.utilitarios import Utilitarios
-import json, io, binascii
+import json, io, binascii, os
 
 class Registros:
     arvore = MerkleTree()
@@ -21,15 +21,15 @@ class Registros:
 
 #========================================================================================================
     def inserir(self, elemento):
-        print(elemento)
-        print(elemento.Hash)
+        print(elemento.serializar())
         if isinstance(elemento, Eleitor) or isinstance(elemento, Candidato):
             if isinstance(elemento, Eleitor):
                 self.eleitores.append(elemento)
             if isinstance(elemento, Candidato):
                 self.candidatos.append(elemento)
-            
-            self.arvore.update(elemento.Hash)
+
+            print(elemento.Hash)
+            self.arvore.update(digest=elemento.Hash)
     
 #========================================================================================================
     def exportar(self, arquivo):
@@ -49,29 +49,36 @@ class Registros:
 #========================================================================================================
     def importar(self, arquivo):
         util = Utilitarios()
-
-        if not isinstance(arquivo, io.TextIOWrapper):
+        
+        if os.path.exists(arquivo):
             try:
-                f = open(arquivo, 'r')
+                with open(arquivo, 'r+') as f:
+                
+                    tmp = json.load(f)
+                
+                    arv = open('/tmp/arv_tmp.json', 'w')
+                    json.dump(tmp['arvore'], arv)
+                    arv.close()
+                    self.arvore = MerkleTree.loadFromFile('/tmp/arv_tmp.json')
+                    
+                    for e in tmp['eleitores']:
+                        try:
+                            print("Importando {}".format(e))
+                            self.inserir(Eleitor(processo = 'importar', dicionario=e))
+                        except TypeError:
+                            print("Eleitor inválido, pulando")
+                    
+                    for c in tmp['candidatos']:
+                        self.inserir(Candidato(dicionario=c))
+                    
+                    util.remover_seguramente('arv_tmp.json', 5)
+                f.close()
+
             except IOError:
                 print("Arquivo indisponível")
-        else:
-            f = arquivo
-            
-        tmp = json.load(f)
-        arv = open('/tmp/arv_tmp.json', 'w')
-        json.dump(tmp['arvore'], arv)
-        arv.close()
-        self.arvore = MerkleTree.loadFromFile('/tmp/arv_tmp.json')
-        
-        eleitores = [Eleitor(dicionario=e) for e in tmp['eleitores']]
-        self.eleitores.extend(eleitores)
-
-        candidatos = []
-        for e in tmp['candidatos']:
-            candidatos.append(Candidato(dicionario=e))
-        self.candidatos.extend(candidatos)
+            except ValueError:
+                print('Arquivo de registros inválido, criando novos registros')
+            else:
+                print("Arquivo não localizado")
         
         
-        f.close()
-        util.remover_seguramente('arv_tmp.json', 5)

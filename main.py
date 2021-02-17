@@ -24,29 +24,20 @@ class TelaColeta(Screen):
 #========================================================================================================
 #========================================================================================================
 class TelaAlistamento(Screen):
-    registro = Registros()
+    registros = Registros()
     utxo = UTXO(arquivo='/tmp/utxo.json')
-    eleitores = []
     nEleitor = kyprops.ObjectProperty()
 
     def iniciar(self):
-        try:
-            with open("/tmp/registros.json", 'r') as f:
-                # print(f)
-                self.registro.importar(f)
-                
-        except IOError:
-            print("Arqivo não localizado")
+        
+        self.registros.importar('/tmp/registros.json')
         
     def novoEleitor(self):        
-        eleitor = Eleitor(self.nEleitor.text)
-        self.eleitores.append(eleitor)
-        self.registro.inserir(eleitor)
+        eleitor = Eleitor(processo='criar', nome=self.nEleitor.text)
+        self.registros.inserir(eleitor)
         self.utxo.novoEndereco(eleitor.transacaoCriacao())
-        self.registro.exportar('/tmp/registros.json')
+        self.registros.exportar('/tmp/registros.json')
         self.utxo.exportar(arquivo='/tmp/utxo.json')
-        for e in self.eleitores:
-            print(e.serializar())
         self.nEleitor.text = ''
 
 #========================================================================================================
@@ -63,7 +54,6 @@ class TelaCandidatura(Screen):
     def iniciar(self):
         try:
             with open("/tmp/registros.json", 'r') as f:
-                print(f)
                 self.registro.importar(f)
                 
         except IOError:
@@ -75,11 +65,10 @@ class TelaCandidatura(Screen):
         self.candidatos.append(candidato)
         self.registro.inserir(candidato)
         self.utxo.novoEndereco(candidato.transacaoCriacao())
-        print(self.utxo.serializar())
         self.registro.exportar('/tmp/registros.json')
         self.utxo.exportar(arquivo='/tmp/utxo.json')
-        for c in self.candidatos:
-            print(c.serializar())
+        # for c in self.candidatos:
+        #     print(c.serializar())
 
 #========================================================================================================        
 #========================================================================================================
