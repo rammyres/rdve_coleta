@@ -13,36 +13,31 @@ class Candidato:
     Hash = ''
     
     def __init__(self, 
-                    processo, 
-                    apelido=None, 
-                    numero=None, 
+                    apelido, 
+                    numero, 
                     ID = None, 
                     chavePrivada=None, 
-                    endereco=None, 
-                    dicionario = None):
+                    chavePublica=None,
+                    endereco=None):
 
-        if processo == 'importar' and dicionario:
-            print(dicionario)
-            self.importar(dicionario)
-
-        elif processo == 'importacao_interna':
+        if apelido and numero and ID and chavePrivada and chavePublica and endereco:
             self.apelido = apelido
             self.numero = numero
             self.ID = ID
-            self.chavePrivada = SigningKey.from_string(chavePrivada)
-            self.chavePublica = self.chavePrivada.get_verifying_key()
+            self.chavePrivada = SigningKey.from_string(binascii.unhexlify(chavePrivada), SECP256k1)
+            self.chavePublica = VerifyingKey.from_string(binascii.unhexlify(chavePublica), SECP256k1)
             self.endereco = endereco
 
-        elif processo == 'criar' and apelido and numero: 
+        elif apelido and numero and not ID and not chavePrivada and not chavePublica and not endereco: 
             self.apelido = apelido
             self.numero = numero
             self.ID = str(uuid.uuid4())
             self.chavePrivada = SigningKey.generate(curve=SECP256k1)
-            self.chavePublica = self.chavePrivada.get_verifying_key()
+            self.chavePublica = self.chavePrivada.verifying_key
             self.endereco = self.gerarEndereco()
 
         else:
-            raise TypeError("Importação de candidato: registro inválido, {} interrompido(a)".format(processo))
+            raise TypeError("Candidato inválido, pulando")
 
         self.gerarHash()
                 
@@ -83,20 +78,8 @@ class Candidato:
             assinatura = self.chavePrivada.sign(dados).to_string()
         else:
             assinatura = binascii.hexlify(self.chavePrivada.sign(bytes(dados, encoding='utf8'))).hex()
-        print(assinatura)
-        return assinatura
-
-#========================================================================================================
-    def importar(self, dicionario):
-        self = Candidato(
-            processo='importacao_interna',
-            apelido=dicionario['apelido'],
-            numero=dicionario['numero'],
-            ID=dicionario['id'],
-            chavePrivada=dicionario['chavePrivada'],
-            endereco=dicionario['endereco']
-        )
-        return self
+        
+        return assinatura    
 
 #========================================================================================================
     def serializar(self):

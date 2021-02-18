@@ -15,16 +15,23 @@ class Transacao:
     Hash = ''
 
 #========================================================================================================
-    def __init__(self, tipo = None, 
-                       endereco = None, 
-                       tipo_endereco = None,
-                       numero = None,
-                       endereco_origem = None, 
-                       endereco_destino = None, 
-                       saldo_transferido = None, 
-                       assinatura = None):
+    def __init__(self, 
+                    ID = None,
+                    tipo = None, 
+                    endereco = None, 
+                    tipo_endereco = None,
+                    numero = None,
+                    endereco_origem = None, 
+                    endereco_destino = None, 
+                    saldo_transferido = None, 
+                    assinatura = None,
+                    Hash = None
+                ):
 
-        self.ID = str(uuid.uuid4())
+        if ID: 
+            self.ID = ID
+        else:
+            self.ID = str(uuid.uuid4())
         if tipo == 'criar_endereco':
             self.tipo = tipo
             self.endereco = endereco
@@ -37,6 +44,10 @@ class Transacao:
             self.saldo_transferido = saldo_transferido
 
         self.assinatura = assinatura
+        if Hash:
+            self.Hash = Hash
+        else:
+            self.gerarHash()
 
 
 #========================================================================================================
@@ -123,12 +134,3 @@ class Transacao:
         return dicionario
 
 #========================================================================================================
-    def importar(self, dicionario):
-        self.ID = dicionario['id']
-        self.tipo = dicionario['tipo']
-        self.endereco = dicionario['endereco']
-        self.assinatura = dicionario['assinatura']
-        self.Hash = dicionario['hash']  
-            
-        if dicionario['tipo_endereco'] == 'candidato':
-            self.numero = dicionario['numero']

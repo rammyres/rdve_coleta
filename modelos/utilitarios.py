@@ -15,4 +15,6 @@ class Utilitarios:
         for _ in range(tamanho):
             arquivo.write(b'\x00')
         
+        arquivo.close()
+        
         os.remove(caminho) 

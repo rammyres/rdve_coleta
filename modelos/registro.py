@@ -2,6 +2,7 @@ from pymerkle import MerkleTree
 from modelos.candidato import Candidato
 from modelos.eleitor import Eleitor
 from modelos.utilitarios import Utilitarios
+from tqdm import tqdm
 import json, io, binascii, os
 
 class Registros:
@@ -21,14 +22,12 @@ class Registros:
 
 #========================================================================================================
     def inserir(self, elemento):
-        print(elemento.serializar())
         if isinstance(elemento, Eleitor) or isinstance(elemento, Candidato):
             if isinstance(elemento, Eleitor):
                 self.eleitores.append(elemento)
             if isinstance(elemento, Candidato):
                 self.candidatos.append(elemento)
 
-            print(elemento.Hash)
             self.arvore.update(digest=elemento.Hash)
     
 #========================================================================================================
@@ -56,33 +55,46 @@ class Registros:
                 
                     tmp = json.load(f)
                 
-                    arv = open('/tmp/arv_tmp.json', 'w')
-                    json.dump(tmp['arvore'], arv)
-                    arv.close()
+                    with open('/tmp/arv_tmp.json', 'w') as arv:
+                        json.dump(tmp['arvore'], arv)
+                        arv.close()
                     self.arvore = MerkleTree.loadFromFile('/tmp/arv_tmp.json')
-                    
-                    for e in tmp['eleitores']:
+
+                    for e in tqdm(tmp['eleitores']):
+                        
                         try:
-                            print("Importando {}".format(e))
-                            self.inserir(Eleitor(processo = 'importar', dicionario=e))
+                            eleitor = Eleitor(
+                                nome = e['nome'],
+                                ID=e['id'],
+                                chavePrivada=e['chavePrivada'],
+                                chavePublica=e['chavePublica'],
+                                endereco=e['endereco']
+                            )
+                            self.inserir(eleitor)
+                            
                         except TypeError:
                             print("Eleitor inválido, pulando")
                     
-                    for c in tmp['candidatos']:
+                    for c in tqdm(tmp['candidatos']):
                         try: 
-                            print("Importando {}".format(c))
-                            self.inserir(Candidato(processo='importar', dicionario=c))
+                            candidato = Candidato(
+                                            ID=c['id'],
+                                            apelido=c['apelido'],
+                                            numero=c['numero'],
+                                            chavePrivada=c['chavePrivada'],
+                                            chavePublica=c['chavePublica'],
+                                            endereco=c['endereco'])
+                                
+                            self.inserir(candidato)
                         except TypeError:
                             print("Candidato inválido, pulando")
                     
                     util.remover_seguramente('arv_tmp.json', 5)
                 f.close()
-
+            
             except IOError:
                 print("Arquivo indisponível")
             except ValueError:
                 print('Arquivo de registros inválido, criando novos registros')
             else:
                 print("Arquivo não localizado")
-        
-        

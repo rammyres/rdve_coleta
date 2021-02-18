@@ -1,6 +1,6 @@
 from modelos.registro import Registros
 from modelos.transacao import Transacao
-from modelos.saldos import Saldos
+from modelos.saldo import Saldo
 import json
 
 class UTXO:
@@ -11,8 +11,10 @@ class UTXO:
         if arquivo:
             if self.importar(arquivo):
                 print("UTXO recuperado")
+                return
             else:
                 if self.importarDosRegistros(arquivoRegistros):
+                    self.importarEnderecos(self.registros)
                     print("Endereços importados a partir dos registros")
 
 #========================================================================================================
@@ -31,20 +33,17 @@ class UTXO:
         return None
 
 #========================================================================================================
-    def importarEnderecos(self, registros):
-        
-        for e in self.registros.eleitores:
-            utxo_eleitores = Saldos(processo = 'criar', transacao=e.transacaoCriacao())
-        for c in self.registros.candidatos:
-            utxo_candidatos = Saldos(processo='criar', transacao=c.transacaoCriacao())
+    def importarEnderecos(self, saldos):
 
-        self.saldos.extend(utxo_candidatos)
-        self.saldos.extend(utxo_eleitores)
+        
+        tmp = [Saldo(saldo_json=e) for e in saldos['saldos']]
+        
+        self.saldos.extend(tmp)
 
 #========================================================================================================
     def novoEndereco(self, transacao):
         if transacao.tipo == 'criar_endereco':
-            self.saldos.append(Saldos(processo='criar', transacao=transacao))
+            self.saldos.append(Saldo(transacao=transacao))
             
 #========================================================================================================
     def transferirSaldo(self, endereco_origem, endereco_destino, assinatura, saldo_transferido):
@@ -74,6 +73,7 @@ class UTXO:
     def importar(self, arquivo):
         try:
             with open(arquivo, 'r') as f:
+                
                 self.importarEnderecos(json.load(f))
                 return True
         except:
@@ -92,6 +92,6 @@ class UTXO:
         except IOError:
             print("Arquivo inexistente")
         except TypeError:
-            print("Arquivo inexistente")
+            print("Arquivo inválido")
             
         return False

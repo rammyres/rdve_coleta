@@ -25,7 +25,7 @@ class TelaColeta(Screen):
 #========================================================================================================
 class TelaAlistamento(Screen):
     registros = Registros()
-    utxo = UTXO(arquivo='/tmp/utxo.json')
+    utxo = UTXO(arquivo='/tmp/utxo.json', arquivoRegistros='/tmp/registros.json')
     nEleitor = kyprops.ObjectProperty()
 
     def iniciar(self):
@@ -33,7 +33,7 @@ class TelaAlistamento(Screen):
         self.registros.importar('/tmp/registros.json')
         
     def novoEleitor(self):        
-        eleitor = Eleitor(processo='criar', nome=self.nEleitor.text)
+        eleitor = Eleitor(nome=self.nEleitor.text)
         self.registros.inserir(eleitor)
         self.utxo.novoEndereco(eleitor.transacaoCriacao())
         self.registros.exportar('/tmp/registros.json')
@@ -44,7 +44,7 @@ class TelaAlistamento(Screen):
 #========================================================================================================
 
 class TelaCandidatura(Screen):
-    utxo = UTXO(arquivo='/tmp/utxo.json')
+    utxo = UTXO(arquivo='/tmp/utxo.json', arquivoRegistros='/tmp/registros.json')
     registro = Registros()
     nCandidato = kyprops.ObjectProperty()
     numCandidato = kyprops.ObjectProperty()
@@ -55,13 +55,14 @@ class TelaCandidatura(Screen):
 
 #========================================================================================================
     def novoCandidato(self):        
-        candidato = Candidato(processo = 'criar', 
-                              apelido = self.nCandidato.text, 
+        candidato = Candidato(apelido = self.nCandidato.text, 
                               numero = self.numCandidato.text)
         self.registro.inserir(candidato)
         self.utxo.novoEndereco(candidato.transacaoCriacao())
         self.registro.exportar('/tmp/registros.json')
         self.utxo.exportar(arquivo='/tmp/utxo.json')
+        self.nCandidato.text = ''
+        self.numCandidato.text = ''
 
 #========================================================================================================        
 #========================================================================================================

@@ -1,7 +1,7 @@
 import json
 from modelos.transacao import Transacao
 
-class Saldos:
+class Saldo:
     endereco = ''
     _tipo = ''
     _numero = ''
@@ -28,15 +28,56 @@ class Saldos:
             self._numero = numero
 
 #========================================================================================================
-    def __init__(self, processo, saldo_json = None, transacao = None):
+    def __init__(self, saldo_json = None, transacao = None):
         # o processo pode ser recuperação (processo = 'recuperar'), com a importação do saldo a partir de um saldo em formato
         # json (saldo json) ou criação de uma nova entrada de saldo (processo = 'criar') e o próximo parametro será uma 
         # transaçção de criação. Além disso poderá ser criada uma transação de movimentação (processo = transferir)
 
-        if processo == "recuperar":
-            if saldo_json:
-                self.importar(saldo_json)
-        if processo == "criar" and transacao:
+        if saldo_json and transacao:
+            raise ValueError("Somente um dos argumentos deve ser preenchido")
+
+        if saldo_json:
+            # A criação da partir de dicionário em formato json é pensada para permitir a importação a partir da persistência
+            # em arquivos texto. O construtor 'polimorfico' da classe Trasacao permite criar 3 tipos de transações
+
+            self.endereco = saldo_json['endereco']
+            self.tipo = saldo_json['tipo']
+            if saldo_json['tipo'] == 'candidato':
+                self.numero = saldo_json['numero']
+            
+            for t in saldo_json['transacoes']:
+                if t['tipo'] == 'transferir_saldo':
+                    tr = Transacao(
+                        ID=t['id'],
+                        tipo=t['tipo'],
+                        endereco_origem=t['endereco_origem'],
+                        endereco_destino=t['endereco_destino'],
+                        saldo_transferido=t['saldo_transferido'],
+                        assinatura=t['assinatura'],
+                        Hash=t['hash']
+                    )
+                if t['tipo'] == 'criar_endereco':
+                    if t['tipo_endereco'] == 'eleitor':
+                        tr = Transacao(
+                            ID = t['id'],
+                            tipo = t['tipo'],
+                            tipo_endereco=t['tipo_endereco'],
+                            assinatura=t['assinatura'],
+                            Hash=t['hash']
+                        )
+                    if t['tipo_endereco'] == t['candidato']:
+                        tr = Transacao(
+                            ID=t['id'],
+                            tipo = t['tipo'],
+                            tipo_endereco=t['tipo_endereco'],
+                            numero=t['numero'],
+                            endereco = t['endereco'],
+                            assinatura=t['assinatura'],
+                            Hash=t['assinatura']
+                        )
+                self.inserirTransacao(tr)
+            
+        if transacao:
             self.endereco = transacao.endereco
             self.tipo = transacao.tipo_endereco
             if transacao.tipo == "candidato":
@@ -70,24 +111,7 @@ class Saldos:
                     self.transacoes.append(transacao)
         elif transacao.endereco_origem == self.endereco or transacao.endereco_destino:
             if not self.procurarTransacaoPorID(transacao.ID):
-                self.transacoes.append(transacao)
-#========================================================================================================
-    def importar(self, dicionario):
-        print(dicionario)
-        self = Saldos(processo='criar')
-        self.endereco = dicionario['endereco']
-        self.tipo = dicionario['tipo']
-        self.saldo = dicionario['saldo']
-
-        if dicionario['tipo'] == 'candidato':
-            self.numero = dicionario['numero']
-
-        for t in dicionario['transacoes']:
-            tr = Transacao()
-            tr.importar(t)
-            self.inserirTransacao(tr)
-
-        print(self.serializar())
+                self.transacoes.append(transacao)    
 
 #========================================================================================================
     def procurarTransacaoPorID(self, id):

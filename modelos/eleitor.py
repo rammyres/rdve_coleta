@@ -11,36 +11,34 @@ class Eleitor:
     chavePrivada = None
     chavePublica = None
     Hash = ''
-    
 
     def __init__(self, 
-            processo,
-            nome = None, 
+            nome, 
             ID = None, 
             chavePrivada=None, 
+            chavePublica = None,
             endereco=None, 
-            dicionario = None):
+            ):
 
-        
-        if processo == 'importar' and dicionario:
-            self.importar(dicionario)
-
-        elif processo == 'importacao_interna' :  
+        if nome and ID and chavePrivada and chavePublica and endereco:  
             self.nome = nome
             self.ID = ID
             self.chavePrivada = SigningKey.from_string(string=binascii.unhexlify(chavePrivada), curve=SECP256k1)
-            self.chavePublica = self.chavePrivada.get_verifying_key()
+            self.chavePublica = VerifyingKey.from_string(
+                string = binascii.unhexlify(chavePublica), 
+                curve=SECP256k1
+                )
             self.endereco = endereco
 
-        elif processo == 'criar' and nome: 
+        elif nome and not ID and not chavePrivada and not chavePublica and not endereco: 
             self.nome = nome
             self.ID = str(uuid.uuid4())
             self.chavePrivada = SigningKey.generate(curve=SECP256k1)
-            self.chavePublica = self.chavePrivada.get_verifying_key()
+            self.chavePublica = self.chavePrivada.verifying_key
             self.endereco = self.gerarEndereco()
 
         else:
-            raise TypeError("Importação de eleitor: registro inválido, {} interrompido(a)".format(processo))
+            raise TypeError("Eleitor invalido, pulando")
 
         self.gerarHash()
         
@@ -89,18 +87,6 @@ class Eleitor:
             assinatura = binascii.hexlify(self.chavePrivada.sign(bytes(dados, encoding='utf8'))).hex()
         
         return assinatura
-
-#========================================================================================================
-    def importar(self, dicionario):
-        print("Importando...")
-        self = Eleitor(
-            processo='impotacao_interna',
-            nome = dicionario['nome'],
-            ID = dicionario['id'],
-            chavePrivada=dicionario['chavePrivada'],
-            endereco=dicionario['endereco']
-        )
-        return self
 
 #========================================================================================================
     def serializar(self):
