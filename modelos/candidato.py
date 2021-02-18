@@ -12,26 +12,37 @@ class Candidato:
     chavePublica = None
     Hash = ''
     
-    def __init__(self, apelido=None, numero=None, ID = None, chavePrivada=None, endereco=None, dicionario = None):
+    def __init__(self, 
+                    processo, 
+                    apelido=None, 
+                    numero=None, 
+                    ID = None, 
+                    chavePrivada=None, 
+                    endereco=None, 
+                    dicionario = None):
 
-        if dicionario:
+        if processo == 'importar' and dicionario:
+            print(dicionario)
             self.importar(dicionario)
 
-        else:
+        elif processo == 'importacao_interna':
             self.apelido = apelido
             self.numero = numero
+            self.ID = ID
+            self.chavePrivada = SigningKey.from_string(chavePrivada)
+            self.chavePublica = self.chavePrivada.get_verifying_key()
+            self.endereco = endereco
 
-            if chavePrivada and endereco and ID:
-                self.ID = ID
-                self.chavePrivada = SigningKey.from_string(chavePrivada)
-                self.chavePublica = self.chavePrivada.get_verifying_key()
-                self.endereco = endereco
+        elif processo == 'criar' and apelido and numero: 
+            self.apelido = apelido
+            self.numero = numero
+            self.ID = str(uuid.uuid4())
+            self.chavePrivada = SigningKey.generate(curve=SECP256k1)
+            self.chavePublica = self.chavePrivada.get_verifying_key()
+            self.endereco = self.gerarEndereco()
 
-            else: 
-                self.ID = str(uuid.uuid4())
-                self.chavePrivada = SigningKey.generate(curve=SECP256k1)
-                self.chavePublica = self.chavePrivada.get_verifying_key()
-                self.endereco = self.gerarEndereco()
+        else:
+            raise TypeError("Importação de candidato: registro inválido, {} interrompido(a)".format(processo))
 
         self.gerarHash()
                 
@@ -51,13 +62,15 @@ class Candidato:
 
 #========================================================================================================
     def gerarHash(self):
-        dados = ':'.join((
-            str(self.ID),
-            self.apelido,
-            self.numero, 
-            binascii.hexlify(self.chavePublica.to_string()).decode(),
-            self.endereco
-        ))
+        dados = ':'.join(
+            (
+                str(self.ID),
+                self.apelido,
+                self.numero, 
+                binascii.hexlify(self.chavePublica.to_string()).decode(),
+                self.endereco
+            )
+        )
 
         Hash = SHA256.new()
         Hash.update(dados.encode())
@@ -65,8 +78,6 @@ class Candidato:
 
 #========================================================================================================
     def assinar(self, dados):
-        print(type(dados))
-        print(dados)
         assinatura = ''
         if isinstance(dados, bytes):
             assinatura = self.chavePrivada.sign(dados).to_string()
@@ -78,6 +89,7 @@ class Candidato:
 #========================================================================================================
     def importar(self, dicionario):
         self = Candidato(
+            processo='importacao_interna',
             apelido=dicionario['apelido'],
             numero=dicionario['numero'],
             ID=dicionario['id'],
@@ -107,5 +119,5 @@ class Candidato:
                               endereco=self.endereco,
                               assinatura="")
         transacao.assinatura = self.assinar(transacao.dados())
-        transacao.gerarHash() 
+        
         return transacao

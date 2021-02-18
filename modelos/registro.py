@@ -69,7 +69,11 @@ class Registros:
                             print("Eleitor inválido, pulando")
                     
                     for c in tmp['candidatos']:
-                        self.inserir(Candidato(dicionario=c))
+                        try: 
+                            print("Importando {}".format(c))
+                            self.inserir(Candidato(processo='importar', dicionario=c))
+                        except TypeError:
+                            print("Candidato inválido, pulando")
                     
                     util.remover_seguramente('arv_tmp.json', 5)
                 f.close()

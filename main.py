@@ -44,7 +44,6 @@ class TelaAlistamento(Screen):
 #========================================================================================================
 
 class TelaCandidatura(Screen):
-    candidatos = []
     utxo = UTXO(arquivo='/tmp/utxo.json')
     registro = Registros()
     nCandidato = kyprops.ObjectProperty()
@@ -52,23 +51,17 @@ class TelaCandidatura(Screen):
 
 #========================================================================================================
     def iniciar(self):
-        try:
-            with open("/tmp/registros.json", 'r') as f:
-                self.registro.importar(f)
-                
-        except IOError:
-            print("Arquivo não localizado")
+        self.registro.importar(arquivo='/tmp/registros.json')
 
 #========================================================================================================
     def novoCandidato(self):        
-        candidato = Candidato(self.nCandidato.text, self.numCandidato.text)
-        self.candidatos.append(candidato)
+        candidato = Candidato(processo = 'criar', 
+                              apelido = self.nCandidato.text, 
+                              numero = self.numCandidato.text)
         self.registro.inserir(candidato)
         self.utxo.novoEndereco(candidato.transacaoCriacao())
         self.registro.exportar('/tmp/registros.json')
         self.utxo.exportar(arquivo='/tmp/utxo.json')
-        # for c in self.candidatos:
-        #     print(c.serializar())
 
 #========================================================================================================        
 #========================================================================================================

@@ -40,7 +40,7 @@ class Eleitor:
             self.endereco = self.gerarEndereco()
 
         else:
-            raise TypeError("A criação do eleitor falhou")
+            raise TypeError("Importação de eleitor: registro inválido, {} interrompido(a)".format(processo))
 
         self.gerarHash()
         
@@ -138,8 +138,7 @@ class Eleitor:
                     'reqID': reqID,
                     'timestamp': timestamp,
                     'assinatura': self.assinar(binascii.hexlify(dados).decode())
-                },
-                f
+                }, f
         )
 
 
