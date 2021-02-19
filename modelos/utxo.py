@@ -1,21 +1,29 @@
 from modelos.registro import Registros
 from modelos.transacao import Transacao
 from modelos.saldo import Saldo
-import json
+import json, uuid
 
 class UTXO:
-    registros = Registros()
+    ID = ''
     saldos = []
 
-    def __init__(self, arquivo = None, arquivoRegistros = None):
-        if arquivo:
-            if self.importar(arquivo):
-                print("UTXO recuperado")
-                return
-            else:
-                if self.importarDosRegistros(arquivoRegistros):
-                    self.importarEnderecos(self.registros)
-                    print("Endereços importados a partir dos registros")
+    def __init__(self, arquivoUTXO = None):
+
+        if arquivoUTXO:
+            try:
+                with open(arquivoUTXO, 'r') as f:
+                    tmp = json.load(f)
+                    f.close()
+
+                self.ID = tmp['id']
+                self.saldos = [Saldo(saldo_json=e) for e in tmp['saldos']]
+            except IOError:
+                print("Arquivo UTXO não localizado, pulando")
+            except KeyError:
+                print("Arquivo UTXO inválido, pulando importação")
+
+        if not arquivoUTXO:
+            self.ID = str(uuid.uuid4())
 
 #========================================================================================================
     def retornarIndicePorEndereco(self, endereco):
@@ -33,9 +41,7 @@ class UTXO:
         return None
 
 #========================================================================================================
-    def importarEnderecos(self, saldos):
-
-        
+    def importarEnderecos(self, saldos):        
         tmp = [Saldo(saldo_json=e) for e in saldos['saldos']]
         
         self.saldos.extend(tmp)
@@ -57,8 +63,11 @@ class UTXO:
         
 #========================================================================================================
     def serializar(self):
+        print([s.serializar() for s in self.saldos])
+
         return {
                 'header': 'utxo',
+                'id': self.ID,
                 'saldos': [s.serializar() for s in self.saldos]
             }
         
@@ -70,28 +79,28 @@ class UTXO:
             )
 
 #========================================================================================================
-    def importar(self, arquivo):
-        try:
-            with open(arquivo, 'r') as f:
+    # def importar(self, arquivo):
+    #     try:
+    #         with open(arquivo, 'r') as f:
                 
-                self.importarEnderecos(json.load(f))
-                return True
-        except:
-            print("Arquivo não localizado")
+    #             self.importarEnderecos(json.load(f))
+    #             return True
+    #     except:
+    #         print("Arquivo não localizado")
             
-        return False
+    #     return False
 
 #========================================================================================================
-    def importarDosRegistros(self, arquivo):
+    # def importarDosRegistros(self, arquivo):
         
-        try:
-            with open(arquivo, 'r') as f:
-                print(f)
-                self.registros.importar(f)
-                return True               
-        except IOError:
-            print("Arquivo inexistente")
-        except TypeError:
-            print("Arquivo inválido")
+    #     try:
+    #         with open(arquivo, 'r') as f:
+    #             print(f)
+    #             self.registros.importar(f)
+    #             return True               
+    #     except IOError:
+    #         print("Arquivo inexistente")
+    #     except TypeError:
+    #         print("Arquivo inválido")
             
-        return False
+    #     return False

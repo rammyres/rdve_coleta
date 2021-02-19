@@ -25,18 +25,37 @@ class registroComparecimento:
 #========================================================================================================
 class Urna:
     cedulas = []
-    eleitores = []
     candidatos = []
+    regsComparecimento = []
     registros = Registros() 
-    utxo = UTXO
+    utxo = None
 
     def __init__(self):
-        try:
-            with open("/tmp/registros.json", 'r') as f:
-                print(f)
-                self.registros.importar(f)
-        except IOError:
-            print("Arquivo inexistente")
+
+        self.registros.importar("/tmp/registros.json")
+        self.utxo = UTXO(arquivoUTXO='/tmp/utxo.json')
+
+        if len(self.registros.candidatos)>0:
+            for c in self.registros.eleitores:
+                self.candidatos.append({
+                    'apelido': c.apelido,
+                    'numero': c.numero,
+                    'endereco': c.endereco
+                    }
+                )
+        
+#========================================================================================================
+# Retorna o dict referente ao candidato
+#========================================================================================================
+    def retornarCandidatoPorNumero(self, numero):
+        for c in self.candidatos:
+            if c.numero == numero:
+                return self.candidatos[self.candidatos.index(c)]
+
+        return None
+
+# ========================================================================================================
+    # def s
 
 #========================================================================================================
     

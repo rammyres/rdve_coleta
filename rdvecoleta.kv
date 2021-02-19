@@ -9,7 +9,7 @@
 <MDFillRoundFlatButton>:
     font_size: 30
     size_hint: None, None
-    height: 200
+    height: 70
     # md_bg_color: 0.012, 0.988, 0.906, 1
     md_bg_color: from_hex(colors['LightBlue']['500'])
 
@@ -35,7 +35,11 @@
         MDRaisedButton:
             pos_hint: {'x':0.35, 'top':0.4}
             text: "Módulo Urna"
-            on_press: root.manager.current = 'TelaUrna'
+            # on_press: root.manager.current = 'TelaUrna'
+            on_press: root.manager.current = 'TelaSeletor'
+
+<TelaSeletor>:
+    on_enter: root.iniciar()
 
 <TelaUrna>:
     numCandidato:numCandidato 
@@ -152,11 +156,12 @@
             hint_text: "Nome do eleitor"
             mode: "rectangle"
             helper_text: "Digite aqui o nome do eleitor"
-            
+
         MDRaisedButton:
             pos_hint: {'y': 0.4, 'x': 0.6}
             text: "Confirmar registro"
             on_press: root.novoEleitor()
+            on_release: root.feedback()
         MDRaisedButton:
             pos_hint: {'y': 0.3, 'x': 0.6}
             text: "Voltar"

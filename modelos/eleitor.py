@@ -114,16 +114,18 @@ class Eleitor:
 #========================================================================================================
     def requererVoto(self):
         reqID = str(uuid.uuid4())
-        timestamp = str(datetime.now().timestamp())
-        dados = ':'.join((self.ID, reqID, timestamp))
+        # timestamp = str(datetime.now().timestamp())
+        dados = ':'.join((self.ID, reqID))
+        print(len(dados))
+        print(dados)
 
-        with open('/tmp/reqvoto.json') as f:
+        with open('/tmp/reqvoto.json', 'w') as f:
             json.dump(
                 {
                     'id_eleitor': self.ID,
                     'reqID': reqID,
-                    'timestamp': timestamp,
-                    'assinatura': self.assinar(binascii.hexlify(dados).decode())
+                    # 'timestamp': timestamp,
+                    'assinatura': self.assinar(dados)
                 }, f
         )
 
