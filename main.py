@@ -41,6 +41,11 @@ class TelaSeletor(Screen):
     def iniciar(self):
 
         if len(self.registros.eleitores)>0:
+            
+            self.sv.remove_widget(self.ml)
+            self.remove_widget(self.sv)
+            self.ml.clear_widgets()
+            
             for e in self.registros.eleitores:
                 self.ml.add_widget(
                     TwoLineListItem(
@@ -93,14 +98,15 @@ class TelaSeletor(Screen):
 #========================================================================================================
 class TelaAlistamento(Screen):
     registros = Registros()
-    utxo = UTXO(arquivoUTXO='/tmp/utxo.json')
+    utxo = None
     nEleitor = kyprops.ObjectProperty()
 
     def iniciar(self):
         self.registros.importar('/tmp/registros.json')
 
 #========================================================================================================        
-    def novoEleitor(self):        
+    def novoEleitor(self):
+        self.utxo = UTXO(arquivoUTXO='/tmp/utxo.json')        
         eleitor = Eleitor(nome=self.nEleitor.text)
         self.registros.inserir(eleitor)
         self.utxo.novoEndereco(eleitor.transacaoCriacao())

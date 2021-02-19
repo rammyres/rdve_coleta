@@ -36,7 +36,7 @@ class Transacao:
             self.tipo = tipo
             self.endereco = endereco
             self.tipo_endereco = tipo_endereco
-            if self.tipo_endereco == 'candidato':
+            if tipo_endereco == 'candidato':
                 self.numero = numero
         if tipo == 'transferir_saldo':
             self.endereco_destino = endereco_destino
@@ -73,6 +73,14 @@ class Transacao:
                     self.numero,
                     self.tipo_endereco,
                     self.assinatura
+                    )
+                )
+            if self.tipo_endereco == 'urna':
+                dados = ':'.join(
+                    (
+                        self.ID,
+                        self.endereco,
+                        self.assinatura
                     )
                 )
 
@@ -130,6 +138,14 @@ class Transacao:
                     'assinatura': self.assinatura,
                     'hash': self.Hash
                     }
+            if self.tipo_endereco == 'urna':
+                dicionario = {
+                    'id': self.ID,
+                    'tipo': self.tipo_endereco,
+                    'endereco': self.endereco,
+                    'assinatura': self.assinatura,
+                    'hash': self.Hash
+                }
             
         return dicionario
 

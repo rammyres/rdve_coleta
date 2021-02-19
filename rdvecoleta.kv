@@ -22,18 +22,18 @@
             text: "RDVE Modulo de Coleta"          
             font_size: 30
         
-        MDRaisedButton:
+        MDFillRoundFlatButton:
             pos_hint: {'x':0.08, 'top':0.5}
             text: "Alistamento eleitoral"
             on_press: root.manager.current = 'TelaAlistamento'
 
-        MDRaisedButton:
+        MDFillRoundFlatButton:
             pos_hint: {'x':0.5, 'top':0.5}
             text: "Registro de Candidatura"
             on_press: root.manager.current = 'TelaCandidatura'
         
-        MDRaisedButton:
-            pos_hint: {'x':0.35, 'top':0.4}
+        MDFillRoundFlatButton:
+            pos_hint: {'x':0.35, 'top':0.35}
             text: "Módulo Urna"
             # on_press: root.manager.current = 'TelaUrna'
             on_press: root.manager.current = 'TelaSeletor'
@@ -156,14 +156,12 @@
             hint_text: "Nome do eleitor"
             mode: "rectangle"
             helper_text: "Digite aqui o nome do eleitor"
-
-        MDRaisedButton:
+        MDFillRoundFlatButton:
             pos_hint: {'y': 0.4, 'x': 0.6}
             text: "Confirmar registro"
             on_press: root.novoEleitor()
-            on_release: root.feedback()
-        MDRaisedButton:
-            pos_hint: {'y': 0.3, 'x': 0.6}
+        MDFillRoundFlatButton:
+            pos_hint: {'y': 0.26, 'x': 0.6}
             text: "Voltar"
             on_press: root.manager.current = 'TelaInicial'
 
@@ -184,11 +182,11 @@
             pos_hint: {'y': 0.5}
             hint_text: "Numero do candidato"
             mode: "rectangle"
-        MDRaisedButton:
-            pos_hint: {'y': 0.4, 'x': 0.6}
+        MDFillRoundFlatButton:
+            pos_hint: {'y': 0.35, 'x': 0.6}
             text: "Confirmar registro"
             on_press: root.novoCandidato()
-        MDRaisedButton:
-            pos_hint: {'y': 0.3, 'x': 0.6}
+        MDFillRoundFlatButton:
+            pos_hint: {'y': 0.20, 'x': 0.6}
             text: "Voltar"
             on_press: root.manager.current = 'TelaInicial'

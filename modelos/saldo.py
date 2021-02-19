@@ -46,6 +46,7 @@ class Saldo:
                 self.numero = saldo_json['numero']
             
             for t in saldo_json['transacoes']:
+                print(t)
                 if t['tipo'] == 'transferir_saldo':
                     tr = Transacao(
                         ID=t['id'],
@@ -65,7 +66,7 @@ class Saldo:
                             assinatura=t['assinatura'],
                             Hash=t['hash']
                         )
-                    if t['tipo_endereco'] == t['candidato']:
+                    if t['tipo_endereco'] == 'candidato':
                         tr = Transacao(
                             ID=t['id'],
                             tipo = t['tipo'],
@@ -108,8 +109,9 @@ class Saldo:
             if transacao.endereco == self.endereco: 
                 print(self.procurarTransacaoPorID(transacao.ID))
                 if not self.procurarTransacaoPorID(transacao.ID):
-                    self.transacoes.append(transacao)
-        elif transacao.endereco_origem == self.endereco or transacao.endereco_destino:
+                    if self.endereco == transacao.endereco: 
+                        self.transacoes.append(transacao)
+        elif transacao.endereco_origem == self.endereco or transacao.endereco_origem == transacao.endereco_destino:
             if not self.procurarTransacaoPorID(transacao.ID):
                 self.transacoes.append(transacao)    
 

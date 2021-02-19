@@ -20,15 +20,33 @@ class Registros:
                 self.arvore = MerkleTree.loadFromFile(f)
                 f.close()
 
-#========================================================================================================
-    def inserir(self, elemento):
-        if isinstance(elemento, Eleitor) or isinstance(elemento, Candidato):
-            if isinstance(elemento, Eleitor):
-                self.eleitores.append(elemento)
-            if isinstance(elemento, Candidato):
-                self.candidatos.append(elemento)
+#=======================================================================================================#
+# Verifica se o elemento com ID e endereco especificados já existe nos registros, a fim de evitar 
+# duplicidade nos registros 
+#=======================================================================================================#
+    def existeRegistro(self, ID, endereco):
+        for e in self.eleitores:
+            if e.ID == ID and e.endereco == endereco:
+                return True
+        for c in self.candidatos:
+            if c.ID == ID and c.endereco == endereco:
+                return True
 
-            self.arvore.update(digest=elemento.Hash)
+        return False
+
+#=======================================================================================================#
+# Insere um elemento nas listas de eleitores ou candidatos                                              #
+#=======================================================================================================#
+    def inserir(self, elemento):
+
+        if not self.existeRegistro(elemento.ID, elemento.endereco):
+            if isinstance(elemento, Eleitor) or isinstance(elemento, Candidato):
+                if isinstance(elemento, Eleitor):
+                    self.eleitores.append(elemento)
+                if isinstance(elemento, Candidato):
+                    self.candidatos.append(elemento)
+
+                self.arvore.update(digest=elemento.Hash)
     
 #========================================================================================================
     def exportar(self, arquivo):
