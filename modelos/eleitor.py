@@ -59,11 +59,12 @@ class Eleitor:
 #========================================================================================================
     def dados(self):
         
-        dados = ':'.join((
-            self.ID,
-            self.nome,
-            binascii.hexlify(self.chavePublica.to_string()).hex(),
-            self.endereco
+        dados = ':'.join(
+            (
+                self.ID,
+                self.nome,
+                binascii.hexlify(self.chavePublica.to_string()).hex(),
+                self.endereco
             )
         )
 

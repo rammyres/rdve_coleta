@@ -43,6 +43,7 @@
 
 <TelaUrna>:
     numCandidato:numCandidato 
+    telaCandidato: telaCandidato
     MDGridLayout:
         size: root.size
         cols: 2
@@ -59,6 +60,7 @@
                 size: "280dp", "180dp"
                 pos_hint: {"center_x": .5, "center_y": .5}
                 MDLabel:
+                    id: telaCandidato
                     text: "Nome e numero do candidato"
                     font_size: 30
             MDFillRoundFlatButton:
@@ -116,11 +118,9 @@
                     on_press: root.ao_tocar(self.text)
                 MDFillRoundFlatButton:
                     text: '8'
-                    
                     on_press: root.ao_tocar(self.text)
                 MDFillRoundFlatButton:
                     text: '9'
-                    
                     on_press: root.ao_tocar(self.text)
                 MDFillRoundFlatButton:
                     text: ''

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import kivy
+import kivy, json
 from kivymd.app import MDApp
 import kivy.properties as kyprops
 from kivy.uix.floatlayout import FloatLayout
@@ -19,6 +19,7 @@ from kivymd.color_definitions import colors
 from modelos.eleitor import Eleitor
 from modelos.candidato import Candidato
 from modelos.registro import Registros
+from modelos.urna import Urna
 from modelos.utilitarios import Utilitarios
 from modelos.utxo import UTXO
 
@@ -146,10 +147,31 @@ class Content(BoxLayout):
 #========================================================================================================
 class TelaUrna(Screen):
     # eleitor = Eleitor()
-    eleitores = []
-    candidatos = []
+    eleitor = None
+    urna = Un
     numCandidato = kyprops.ObjectProperty()
-    
+    telaCandidato = kyprops.ObjectProperty()
+    registros = Registros()
+#========================================================================================================
+    def ao_iniciar(self):
+        self.registros.importar('/tmp/registros.json')
+        
+        try:
+            with open('reqvoto.json', 'r') as f:
+                tmp = json.load(f)
+                
+                self.eleitor = {
+                    'nome': tmp['nome'], 
+                    'endereco': tmp['endereco'], 
+                    'assinatura': tmp['assinatura']
+                    }
+                self.urna.inserirReqVoto(self.eleitor)
+                f.close()
+        except IOError:
+            self.telaCandidato.text = 'Requisição de votação não localizada'
+            self.manager.current = 'TelaInicial'
+        
+#========================================================================================================
     def ao_tocar(self, texto): 
         self.numCandidato.text += texto
 
@@ -159,7 +181,13 @@ class TelaUrna(Screen):
 
 #========================================================================================================
     def ao_editar(self):
-        print(self.numCandidato.text)
+        for cand in self.registros.candidatos:
+            if self.numCandidato.text == cand.numero:
+                self.telaCandidato.text = '{} - {}'.format(cand.numero, cand.apelido)
+                return
+            else:
+                self.telaCandidato.text = ""
+
 
 #========================================================================================================
 #========================================================================================================

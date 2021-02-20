@@ -29,9 +29,6 @@ class Saldo:
 
 #========================================================================================================
     def __init__(self, saldo_json = None, transacao = None):
-        # o processo pode ser recuperação (processo = 'recuperar'), com a importação do saldo a partir de um saldo em formato
-        # json (saldo json) ou criação de uma nova entrada de saldo (processo = 'criar') e o próximo parametro será uma 
-        # transaçção de criação. Além disso poderá ser criada uma transação de movimentação (processo = transferir)
 
         if saldo_json and transacao:
             raise ValueError("Somente um dos argumentos deve ser preenchido")
@@ -84,25 +81,19 @@ class Saldo:
             if transacao.tipo == "candidato":
                 self.numero = transacao.numero
             self.inserirTransacao(transacao)
-            self.adicionarSaldo(1)
+            self.saldo = 1
         
 #========================================================================================================
     def tranferir(self, transacao):
         if not self.procurarTransacaoPorID(transacao.ID):
             if self.endereco == transacao.endereco_destino:
-                self.adicionarSaldo(transacao.saldo_trasnferido)
+                self.saldo += transacao.saldo_trasnferido
                 self.inserirTransacao(transacao)
             if self.endereco == transacao.endereco_origem:
-                self.reduzirSaldo(transacao.saldo_transferido)
+                self.saldo -=transacao.saldo_transferido
                 self.inserirTransacao(transacao)
 #========================================================================================================
     
-    def adicionarSaldo(self, acrescimo):
-        self.saldo+= acrescimo
-#========================================================================================================
-
-    def reduzirSaldo(self, decrescimo):
-        self.saldo -= decrescimo
 #========================================================================================================
     def inserirTransacao(self, transacao):
         if transacao.tipo == 'criar_endereco': 
@@ -127,7 +118,7 @@ class Saldo:
 
         if self.tipo == 'candidato':
             for e in self.transacoes:
-                print([e.serializar() for e in self.transacoes])
+                print(e)
             dicionario = {
                 'endereco': self.endereco,
                 'tipo': self.tipo,

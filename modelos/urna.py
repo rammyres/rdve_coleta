@@ -1,73 +1,51 @@
 import json, datetime, uuid, binascii
-from modelos.candidato import Candidato
-from modelos.eleitor import Eleitor
-from modelos.registro import Registros
+from datetime import datetime
 from modelos.cedula import Cedula
+from modelos.transacao import Transacao
 from modelos.cedulasEmBranco import CedulasEmBranco
 from modelos.cedulasPreenchidas import CedulasPreenchidas
 from modelos.utxo import UTXO
-from modelos.transacao import Transacao
 from ecdsa import SigningKey, VerifyingKey, SECP256k1
 from pymerkle import MerkleTree
+from Crypto.Hash import SHA256
 
-class registroComparecimento:
-    id_eleitor = ''
-    assinatura = ''
-
-#========================================================================================================    
-    def __init__(self, eleitor, assinatura):
-        self.id_eleitor = eleitor.ID
-        self.assinatura = assinatura
-
-#========================================================================================================
-    def serializar(self):
-        return {
-                'id_eleitor': self.id_eleitor,
-                'timestamp': str(datetime.datetime.now().timestamp()),
-                'assinatura': self.assinatura
-                }
 
 #========================================================================================================
 class Urna:
     urnaID = ''
     endereco = ''
-    chavePrivada = None
-    chavePublica = None
-    cedulasEmBranco = None
-    cedulasPreenchidas = None
-    candidatos = []
-    regsComparecimento = []
-    registros = Registros() 
     utxo = None
+    cedulasEmBranco = None
+    CedulasPreenchidas = CedulasPreenchidas(urnaID)
+    chavePrivada = None 
+    chavePublica = None 
+    regsComparecimento = []
 
-    def __init__(self):
+#========================================================================================================
+    def __init__(self, qtdEleitores = None, arquivoUrna = None):
         self.urnaID = str(uuid.uuid4())
-        self.chavePrivada = SigningKey.generate(curve=SECP256k1)
-        self.cedulasPreenchidas = CedulasPreenchidas(self.urnaID)
-        self.registros.importar("/tmp/registros.json")
+        self.endereco = 'URNA'
         self.utxo = UTXO(arquivoUTXO='/tmp/utxo.json')
-        self.cedulasEmBranco = CedulasEmBranco(
-                                quantidade = len(self.registros.eleitores),
-                                urnaID = self.urnaID
-                                )
+        self.chavePrivada = SigningKey.generate(curve=SECP256k1)
+        self.chavePublica = self.chavePrivada.verifying_key
 
-        if len(self.registros.candidatos)>0:
-            for c in self.registros.candidatos:
-                self.candidatos.append({
-                    'apelido': c.apelido,
-                    'numero': c.numero,
-                    'endereco': c.endereco
-                    }
-                )
-
-        self.utxo.novoEndereco(self.transacaoCriacao())
-        
-        self.imporarReqVoto(arquivo='/tmp/reqvoto.json')
-        
+        if qtdEleitores:
+            self.cedulasEmBranco = CedulasEmBranco(self.urnaID, qtdEleitores)
+    
 #========================================================================================================
-# Retorna o dict referente ao candidato
-#========================================================================================================
+    def registrarVoto(self, endereco):
+        cedula = self.cedulasEmBranco.pop(0)
+        assinatura = self.assinar('{}:{}'.format(cedula.ID, endereco))
+        cedula.registrarVoto(endereco, assinatura)
+        self.CedulasPreenchidas.append(cedula)
+        self.utxo.transferirSaldo(
+            endereco_origem=self.endereco,
+            endereco_destino=endereco,
+            assinatura=assinatura,
+            saldo_transferido=1
+            )
 
+#========================================================================================================
     def transacaoCriacao(self):
         transacao = Transacao(
             tipo='criar_endereco',
@@ -77,31 +55,60 @@ class Urna:
         )
         return transacao
 #========================================================================================================
+    def inserirReqVoto(self, reqvoto):
+        sha256 = SHA256.new()
+        dados = ':'.join((
+                        reqvoto['nome'],
+                        reqvoto['endereco'],
+                        datetime.now().timestamp.to_string(),
+                        reqvoto['assinatura']))
 
-    def transferirSaldo(self, endereco_origem, endereco_destino):
+        timestamp = datetime.now().timestamp.to_string()
+        if isinstance(reqvoto, dict):
+            reg_comparecimento = {
+                'eleitor': reqvoto['nome'],
+                'endereco': reqvoto['endereco'],
+                'timestamp': timestamp,
+                'assinatura': reqvoto['assinatura'],
+                'hash': sha256.update(dados.encode()).hexdigest()
+            }
+            self.regsComparecimento.append(reg_comparecimento)
+
+            assinatura = self.assinar(
+                ':'.join(
+                    (
+                        reqvoto['endereco'],
+                        self.endereco,
+                        '1'
+                    )
+                )
+            )
+
+            self.utxo.transferirSaldo(
+                endereco_origem=reqvoto['endereco'],
+                endereco_destino=self.endereco,
+                saldo_transferido=1,
+                assinatura = assinatura
+                )
+#========================================================================================================
+    def serializar(self):
+        return {
+            'header': 'produtos_de_votacao',
+            'urnaID': self.urnaID,
+            'chavePrivada': binascii.unhexlify(self.chavePrivada.to_string()).decode(),
+            'chavePublica': binascii.unhexlify(self.chavePublica.to_string()).decode(),
+            'registros': [registro for registro in self.regsComparecimento],
+            'cedulasEmBranco': [cedula.serializar() for cedula in self.cedulasEmBranco],
+            'cedulasPreenchidas': [cedula.serializar() for cedula in self.CedulasPreenchidas],
+
+        }
+        
 
 
 #========================================================================================================
-
     def assinar(self, dados):
         if isinstance(dados, bytes):
             return self.chavePrivada.sign(dados)
         else:
             return self.chavePrivada.sign(binascii.unhexlify(dados))
-
-#========================================================================================================
-    def retornarCandidatoPorNumero(self, numero):
-        for c in self.candidatos:
-            if c.numero == numero:
-                return self.candidatos[self.candidatos.index(c)]
-        return None
-
-# ========================================================================================================
-    def registrarVoto(self, numero):
-        cedula = self.cedulasEmBranco.pop(0)
-        cedula.registrarVoto(
-            self.retornarCandidatoPorNumero(numero=numero)['endereco']
-            )
-
-#========================================================================================================
     
