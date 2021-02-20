@@ -28,10 +28,13 @@ class UTXO:
 
 #========================================================================================================
     def retornarIndicePorEndereco(self, endereco):
-        for i in range(len(self.saldos)-1):
-            if self.saldos[i].endereco == endereco:
-                return i
-        return None
+        a = None
+        for i in range(0, len(self.saldos)):
+        
+            if (self.saldos[i].endereco == endereco):
+                a = i
+        print(a)
+        return a
 
 #========================================================================================================
     def retornarEnderecoPeloNumero(self, numero):
@@ -60,6 +63,10 @@ class UTXO:
                        endereco_origem=endereco_origem,
                        saldo_transferido = saldo_transferido,
                        assinatura=assinatura)
+        print(endereco_origem)
+        print(tr)
+        for s in self.saldos:
+            print(s.endereco)
         self.saldos[self.retornarIndicePorEndereco(endereco_origem)].tranferir(tr)
         self.saldos[self.retornarIndicePorEndereco(endereco_destino)].tranferir(tr)
         

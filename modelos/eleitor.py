@@ -23,7 +23,10 @@ class Eleitor:
         if nome and ID and chavePrivada and chavePublica and endereco:  
             self.nome = nome
             self.ID = ID
-            self.chavePrivada = SigningKey.from_string(string=binascii.unhexlify(chavePrivada), curve=SECP256k1)
+            self.chavePrivada = SigningKey.from_string(
+                string=binascii.unhexlify(chavePrivada), 
+                curve=SECP256k1
+                )
             self.chavePublica = VerifyingKey.from_string(
                 string = binascii.unhexlify(chavePublica), 
                 curve=SECP256k1

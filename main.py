@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import kivy, json
+import kivy, json, os
 from kivymd.app import MDApp
 import kivy.properties as kyprops
 from kivy.uix.floatlayout import FloatLayout
@@ -148,7 +148,7 @@ class Content(BoxLayout):
 class TelaUrna(Screen):
     # eleitor = Eleitor()
     eleitor = None
-    urna = Un
+    urna = None
     numCandidato = kyprops.ObjectProperty()
     telaCandidato = kyprops.ObjectProperty()
     registros = Registros()
@@ -156,13 +156,21 @@ class TelaUrna(Screen):
     def ao_iniciar(self):
         self.registros.importar('/tmp/registros.json')
         
+        if os.path.exists('/tmp/produtos_votacao'):
+            self.urna = Urna(
+                arquivoUrna='/tmp/produtos_votacao',
+                qtdEleitores=len(self.registros.eleitores)
+                )
+        else:
+            self.urna = Urna(qtdEleitores=len(self.registros.eleitores))
+
         try:
-            with open('reqvoto.json', 'r') as f:
+            with open('/tmp/reqvoto.json', 'r') as f:
                 tmp = json.load(f)
                 
                 self.eleitor = {
-                    'nome': tmp['nome'], 
-                    'endereco': tmp['endereco'], 
+                    'id_eleitor': tmp['id_eleitor'], 
+                    'reqID': tmp['reqID'], 
                     'assinatura': tmp['assinatura']
                     }
                 self.urna.inserirReqVoto(self.eleitor)
@@ -170,6 +178,9 @@ class TelaUrna(Screen):
         except IOError:
             self.telaCandidato.text = 'Requisição de votação não localizada'
             self.manager.current = 'TelaInicial'
+
+        
+
         
 #========================================================================================================
     def ao_tocar(self, texto): 
@@ -188,8 +199,17 @@ class TelaUrna(Screen):
             else:
                 self.telaCandidato.text = ""
 
-
 #========================================================================================================
+
+    def ao_confirmar(self):
+        if self.numCandidato.text == '00':
+            self.numCandidato.text = ''
+        if self.numCandidato.text != '':
+            self.urna.registrarVoto(
+                self.registros.retornaEnderecoPeloNumero(self.numCandidato.text)
+                )
+            self.numCandidato.text = ''
+            self.urna.produtos_de_votacao()
 #========================================================================================================
 class RDVEColetaApp(MDApp):
     

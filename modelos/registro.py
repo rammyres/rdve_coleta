@@ -62,6 +62,18 @@ class Registros:
                 f, indent=4
             )
             f.close()
+#========================================================================================================
+    def retornaEnderecoPeloNumero(self, numero):
+        for c in self.candidatos:
+            if c.numero == numero:
+                return c.endereco
+        return None
+#========================================================================================================
+    def retornaEnderecoPeloID(self, ID):
+        for e in self.eleitores:
+            if e.ID == ID:
+                return e.endereco
+        return None
 
 #========================================================================================================
     def importar(self, arquivo):

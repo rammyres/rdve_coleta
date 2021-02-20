@@ -28,6 +28,7 @@ class CedulasPreenchidas(list):
         if isinstance(cedula, Cedula):
             self.append(cedula)
         random.shuffle(self)
+        self.exportar('/tmp/registro_temporario.json')
         
 #========================================================================================================
     def importar(self, arquivo):

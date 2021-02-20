@@ -44,6 +44,7 @@
 <TelaUrna>:
     numCandidato:numCandidato 
     telaCandidato: telaCandidato
+    on_enter: root.ao_iniciar()
     MDGridLayout:
         size: root.size
         cols: 2
@@ -140,7 +141,7 @@
                     on_press: root.corrige()
                 MDFillRoundFlatButton:
                     text: 'Confirma'
-
+                    on_press: root.ao_confirmar()
                     text_color: from_hex(colors["Lime"]["A200"])
         
 
